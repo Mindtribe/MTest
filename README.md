@@ -32,7 +32,7 @@ OSX:
 
 4. Open terminal
 
-5. cd <path to MTest>
+5. cd [path to MTest/]
 
 6. python32 tekCapture.py
 
