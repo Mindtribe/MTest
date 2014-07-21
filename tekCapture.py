@@ -4,9 +4,12 @@ import time
 #globals
 WAIT_TIME = 0.5
 
-#before running this script, connect computer to scope via usb
-#set up connection to scope
-scope = visa.instrument('USB0::0x0699::0x041C::C025028')
+#set up connection to scope over LAN
+scope = visa.instrument("TCPIP::192.168.171.84")
+
+##alternatively, can connect scope via USB
+#scope = visa.instrument('USB0::0x0699::0x041C::C025028')
+
 #create unique timestamped filename
 timestr = time.strftime("%Y%m%d-%H%M%S")
 #save scope settings
