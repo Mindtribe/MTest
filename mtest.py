@@ -38,4 +38,32 @@ class Instrument(object):
         return self.handle.ask(self.get_command('get_version'))
 
     def reset(self):
-        return self.handle.ask(self.get_command('reset'))
+        return self.handle.write(self.get_command('reset'))
+
+class DCPowerSupply(Instrument):
+    def set_output(self, output):
+        self.handle.write(self.get_command('set_output') % output)
+
+    def set_voltage(self, voltage):
+        self.handle.write(self.get_command('set_voltage') % str(voltage))
+
+    def set_current(self, current):
+        self.handle.write(self.get_command('set_current') % str(current))
+
+    def set_voltage_and_current(self, voltage, current):
+        self.handle.write(self.get_command('set_voltage_and_current') % (str(voltage), str(current)))
+
+    def get_voltage(self):
+        return (self.handle.ask(self.get_command('get_voltage')))
+
+    def get_current(self):
+        return (self.handle.ask(self.get_command('get_current')))
+
+    def set_voltage_limit(self, voltageLimit):
+        self.handle.write(self.get_command('set_voltage_limit') % str(voltageLimit))
+
+    def set_current_limit(self, currentLimit):
+        self.handle.write(self.get_command('set_current_limit') % str(currentLimit))
+
+    def set_range(self, range):
+        self.handle.write(self.get_command('set_range') % range)
