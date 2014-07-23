@@ -1,0 +1,71 @@
+{	
+	"addresses":	{
+						"gpib": "None",
+						"serial": "ASRL3",
+						"ip": "None"
+					},
+	"commands": 	{
+						"get_id": 		{ 
+											"commandString": "*IDN?",
+											"arguments": "",
+											"description": "This query requests the electronic load to identify itself"
+										},
+						"get_version": 	{ 
+											"commandString": "SYSTem:VERSion?",
+											"arguments": "",
+											"description": "This command queries the power supply to determine the present SCPI version. The returned value is of a string in the form YYYY.V where the ‘‘Y’s’’ represent the year of the version, and the ‘‘V’’ represents a version number for that year (for example, 1996.0)."
+										},
+						"reset": 		{ 
+											"commandString": "*RST",
+											"arguments": "",
+											"description": "This command resets the power supply to its power-on state."
+										},										
+						"set_output": 	{ 
+											"commandString": "OUTPut %s",
+											"arguments": "output {OFF|ON}",
+											"description": "This command enables or disables the outputs of the power supply. When the output is disabled, the voltage value is 0 V and the current value is 20 mA. At *RST, the output state is OFF."
+										},
+
+						"set_voltage": 	{ 
+											"commandString": "VOLTage %s",
+											"arguments": "voltage {<voltage>}",
+											"description": "This command programs the immediate voltage level of the power supply. The immediate level is the voltage value of the output terminals. The VOLTage command changes the output of the power supply to the newly programmed value regardless of the output range presently selected. You can substitute ‘‘MINimum’’ or ‘‘MAXimum’’ in place of a specific value for the voltage parameter. MIN selects the lowest voltage values of ‘‘0’’ volts. MAX selects the highest voltage values allowed for the selected range. This command also increases or decreases the immediate voltage level using the ‘‘UP’’ or ‘‘DOWN’’ parameter by a predetermined amount. The command VOLTage:STEP sets the amount of increase or decrease. Notice that a new increment setting will cause an execution error -222 (Data out of range) when the maximum or the minimum rated voltage is exceeded."
+										},
+
+						"set_current": 	{ 
+											"commandString": "CURRent %s",
+											"arguments": "current {<current>}",
+											"description": "This command programs the immediate current level of the power supply. The immediate level is the current value of the output terminals. The CURRent command changes the output of the power supply to the newly programmed value regardless of the output range presently selected. You can substitute ‘‘MINimum’’ or ‘‘MAXimum’’ in place of a specific value for the current parameter. MIN selects the lowest current values of ‘‘0’’ amps. MAX selects the highest current values allowed for the selected range. This command also increases or decreases the immediate current level using the ‘‘UP’’ or ‘‘DOWN’’ parameter by a predetermined amount. The command CURRent:STEP sets the amount of increase or decrease. Notice that a new increment setting will cause an execution error -222 (Data out of range) when the maximum or the minimum rated current is exceeded."
+										},
+						"set_voltage_and_current": 	{ 
+											"commandString": "APPLy %s, %s",
+											"arguments": "voltage {<voltage>}, current {<current>}",
+											"description": "This command is combination of VOLTage and CURRent commands. As long as the newly programmed values are within the presently selected range, the output voltage and current are changed as soon as the command is executed. The APPLy command changes the power supply’s output to the newly programmed values only if the programmed values are valid within the presently selected range. An execution error will occur if the programmed values are not valid within the selected range. You can substitute ‘‘MINimum’’, ‘‘MAXimum’’, or ‘‘DEFault’’ in place of a specific value for the voltage and current parameters. MIN selects the lowest values of ‘‘0’’ volts and ‘‘0’’ amps. MAX selects the highest values allowed for the selected range. The default values of voltage and current are ‘‘0’’ volts and ‘‘20’’* or ‘‘7’’** amps regardless of the presently selected range. For more details of parameters, see Table 4-1 for the Agilent E3633A model and Table 4-2 for the Agilent E3634A model. If you specify only one parameter of the APPLy command, the power supply regards it as voltage setting value."
+										},
+						"get_voltage": 	{ 
+											"commandString": "VOLTage?",
+											"arguments": "",
+											"description": "This query returns the presently programmed voltage level of the power supply. VOLT? MAX and VOLT? MIN return the highest and lowest programmable voltage levels for the selected range."
+										},
+						"get_current": 	{ 
+											"commandString": "CURRent?",
+											"arguments": "",
+											"description": "This query returns the presently programmed current level of the power supply. CURR? MAX and CURR? MIN return the highest and lowest programmable current levels for the selected range."
+										},
+						"set_voltage_limit": 	{ 
+											"commandString": "VOLTage:PROTection %s",
+											"arguments": "voltage {<voltage>}",
+											"description": "This command sets the voltage level at which the overvoltage protection (OVP) circuit will trip. If the peak output voltage exceeds the OVP level, then the power supply output is shorted by an internal SCR. The Questionable Status register ‘‘OV’’ bit is set (see page 91). An overvoltage condition can be cleared with the VOLT:PROT:CLE command after the condition that caused the OVP trip is removed."
+										},
+						"set_current_limit": 	{ 
+											"commandString": "CURRent:PROTection %s",
+											"arguments": "current {<current>}",
+											"description": "This command sets the current level at which the overcurrent protection (OCP) circuit will trip. If the peak output current exceeds the OCP level, then the output current is programmed to zero. The Questionable Status register ‘‘OC’’ bit is set (see page 91). An overcurrent condition can be cleared with the CURR:PROT:CLE command after the condition that caused the OCP trip is removed."
+										},
+						"set_range": 	{ 
+											"commandString": "VOLTage:RANGe %s",
+											"arguments": "range {P8V|P20V|LOW|HIGH}",
+											"description": "This command selects an output range to be programmed by the identifier. For example, when 8V/20A* range is selected, the maximum programmable voltage and current are limited to 8.24 volts and 20.60 amps. When 20V/10A* range is selected, the maximum programmable voltage and current are limited to 20.60 volts and 10.30 amps. See page 70 for more details of the programming ranges of the Agilent E3634A model. ‘‘P20V’’* or ‘‘HIGH’’ is the identifier for the 20V/10A* range and ‘‘P8V’’* or ‘‘LOW’’ is for the 8V/20A* range. At *RST, the 8V/20A* or 25V/7A** range is selected."
+										}
+					}
+}

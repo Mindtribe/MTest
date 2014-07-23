@@ -34,9 +34,6 @@ class Instrument(object):
     def get_id(self):
         return self.handle.ask(self.get_command('get_id'))
 
-    def get_version(self):
-        return self.handle.ask(self.get_command('get_version'))
-
     def reset(self):
         return self.handle.write(self.get_command('reset'))
 
@@ -67,3 +64,7 @@ class DCPowerSupply(Instrument):
 
     def set_range(self, range):
         self.handle.write(self.get_command('set_range') % range)
+
+class AgilentE3631A(DCPowerSupply):
+    def get_version(self):
+        return self.handle.ask(self.get_command('get_version'))
