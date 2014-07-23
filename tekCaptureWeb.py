@@ -13,5 +13,5 @@ channelControl.value = ['select:control ' + CHANNEL]
 fileFormatControl = br.find_control('command1')
 fileFormatControl.value = ['save:waveform:fileformat ' + OUTPUT_FORMAT]
 response = br.submit()
-fileobj = open(OUTPUT_FILENAME, "wb")
-fileobj.write(response.read())
+outputFile = open(OUTPUT_FILENAME, "wb")
+outputFile.write(response.read())
