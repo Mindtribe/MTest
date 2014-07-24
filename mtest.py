@@ -5,6 +5,7 @@ import visa
 #globals
 INSTRUMENT_DIRECTORY = './instruments'
 
+#base class
 class Instrument(object):
 
     def __init__(self, name):
@@ -37,9 +38,10 @@ class Instrument(object):
     def reset(self):
         return self.handle.write(self.get_command('reset'))
 
+#DC Power Supply class
 class DCPowerSupply(Instrument):
     def set_output(self, output):
-        self.handle.write(self.get_command('set_output') % output)
+        self.handle.write(self.get_command('set_output') % str(output))
 
     def set_voltage(self, voltage):
         self.handle.write(self.get_command('set_voltage') % str(voltage))
@@ -63,8 +65,62 @@ class DCPowerSupply(Instrument):
         self.handle.write(self.get_command('set_current_limit') % str(currentLimit))
 
     def set_range(self, range):
-        self.handle.write(self.get_command('set_range') % range)
+        self.handle.write(self.get_command('set_range') % str(range))
 
+#Electronic Load class
+class ElectronicLoad(Instrument):
+    def set_input(self, input):
+        self.handle.write(self.get_command('set_input') % str(input))
+
+    def set_voltage(self, voltage):
+        self.handle.write(self.get_command('set_voltage') % str(voltage))
+
+    def set_current(self, current):
+        self.handle.write(self.get_command('set_current') % str(current))
+
+    def set_resistance(self, resistance):
+        self.handle.write(self.get_command('set_resistance') % str(resistance))
+
+    def set_range_current(self, range):
+        self.handle.write(self.get_command('set_range_current') % str(range))
+
+    def set_range_resistance(self, range):
+        self.handle.write(self.get_command('set_range_resistance') % str(range))
+
+    def set_slew_voltage(self, slew):
+        self.handle.write(self.get_command('set_slew_voltage') % str(slew))
+
+    def set_slew_current(self, slew):
+        self.handle.write(self.get_command('set_slew_current') % str(slew))
+
+    def set_mode(self, mode):
+        self.handle.write(self.get_command('set_mode') % str(mode))
+
+    def get_programmed_voltage(self):
+        return (self.handle.ask(self.get_command('get_programmed_voltage')))
+
+    def get_programmed_current(self):
+        return (self.handle.ask(self.get_command('get_programmed_current')))
+
+    def get_programmed_resistance(self):
+        return (self.handle.ask(self.get_command('get_programmed_resistance')))
+
+    def get_voltage(self):
+        return (self.handle.ask(self.get_command('get_voltage')))
+
+    def get_current(self):
+        return (self.handle.ask(self.get_command('get_current')))
+
+    def get_power(self):
+        return (self.handle.ask(self.get_command('get_power')))
+
+#Specific instrument classes
+#DC Power Supplies
 class AgilentE3631A(DCPowerSupply):
     def get_version(self):
         return self.handle.ask(self.get_command('get_version'))
+
+#Electronic Loads
+class Agilent6060B(ElectronicLoad):
+    def get_error(self):
+        return self.handle.ask(self.get_command('get_error'))

@@ -10,62 +10,105 @@
 											"arguments": "",
 											"description": "This query requests the electronic load to identify itself"
 										},
-						"get_version": 	{ 
-											"commandString": "SYSTem:VERSion?",
-											"arguments": "",
-											"description": "This command queries the power supply to determine the present SCPI version. The returned value is of a string in the form YYYY.V where the ‘‘Y’s’’ represent the year of the version, and the ‘‘V’’ represents a version number for that year (for example, 1996.0)."
-										},
 						"reset": 		{ 
 											"commandString": "*RST",
 											"arguments": "",
-											"description": "This command resets the power supply to its power-on state."
+											"description": "This command sets the electronic load to its factory-defined state (refer to 'Facctory Default Settings' in the Operating Manual of the electronic load model that you are programming). There are no parameters with this command; it sets all channels of the multiple electronic load to the same state."
 										},										
-						"set_output": 	{ 
-											"commandString": "OUTPut %s",
+						"set_input": 	{ 
+											"commandString": "INPut %s",
 											"arguments": "output {OFF|ON}",
-											"description": "This command enables or disables the outputs of the power supply. When the output is disabled, the voltage value is 0 V and the current value is 20 mA. At *RST, the output state is OFF."
+											"description": "This implied keyword turns the electronic load input ON and OFF. When INPut is OFF, the electronic load will draw minimal current at its input. INP[STAT]e:OFF overrides INPut:SHORt:ON. The presently programmed slew rate setting is not used when turning the input on or off; the current and voltage change at their maximum rates."
 										},
-
 						"set_voltage": 	{ 
 											"commandString": "VOLTage %s",
 											"arguments": "voltage {<voltage>}",
-											"description": "This command programs the immediate voltage level of the power supply. The immediate level is the voltage value of the output terminals. The VOLTage command changes the output of the power supply to the newly programmed value regardless of the output range presently selected. You can substitute ‘‘MINimum’’ or ‘‘MAXimum’’ in place of a specific value for the voltage parameter. MIN selects the lowest voltage values of ‘‘0’’ volts. MAX selects the highest voltage values allowed for the selected range. This command also increases or decreases the immediate voltage level using the ‘‘UP’’ or ‘‘DOWN’’ parameter by a predetermined amount. The command VOLTage:STEP sets the amount of increase or decrease. Notice that a new increment setting will cause an execution error -222 (Data out of range) when the maximum or the minimum rated voltage is exceeded."
+											"description": "This implied keyword specifies the value of the programmed voltage level and whether that level is to be applied immediately or on occurrence of a trigger. If the specified channel is in the Voltage Mode, an IMMediate voltage level is transferred to the input as soon as the command is executed. A TRIGgered level is stored and transferred to the input when a trigger occurs. At that time, the change to the input level occurs at the slew rate presently in effect. Following the trigger event, subsequent triggers will not affect the input level unless the electronic load has been sent another TRIGgered level command. If the electronic load is not in the CV (Constant-Voltage) Mode when an IMMediate or TRIGgered level command is sent, the programmed levels are saved for the next time the electronic load is placed in the CV Mode. Triggered levels are processed by the Voltage Subsystem even when the electronic load is not in the CV Mode. Thus, the TRIGgered level becomes a stored IMMediate level that takes effect when the electronic load is again in the CV Mode."
 										},
-
 						"set_current": 	{ 
 											"commandString": "CURRent %s",
 											"arguments": "current {<current>}",
-											"description": "This command programs the immediate current level of the power supply. The immediate level is the current value of the output terminals. The CURRent command changes the output of the power supply to the newly programmed value regardless of the output range presently selected. You can substitute ‘‘MINimum’’ or ‘‘MAXimum’’ in place of a specific value for the current parameter. MIN selects the lowest current values of ‘‘0’’ amps. MAX selects the highest current values allowed for the selected range. This command also increases or decreases the immediate current level using the ‘‘UP’’ or ‘‘DOWN’’ parameter by a predetermined amount. The command CURRent:STEP sets the amount of increase or decrease. Notice that a new increment setting will cause an execution error -222 (Data out of range) when the maximum or the minimum rated current is exceeded."
+											"description": "This implied keyword specifies the value of the programmed current level and whether that level is to be applied immediately or on occurrence of a trigger. If the specified channel is in the CC (constant-current) Mode, an IMMediate current level is transferred to the input as soon as the command is executed. A TRIGgered level is stored and transferred to the input when a trigger occurs. At that time, the change to the input level occurs at the slew rate presently in effect. Following the trigger event, subsequent triggers will not affect the input level unless the electronic load has been sent another TRIGgered level command. If the electronic load is not in the CC (Constant-Current) Mode when an IMMediate or TRIGgered level command is sent, the programmed levels are saved for the next time the electronic load is placed in the CC Mode. Triggered levels are processed by the Current Subsystem even when the electronic load is not in the CC Mode. Thus, the TRIGgered level becomes a stored IMMediate level that takes effect when the electronic load is again in the CC Mode."
 										},
-						"set_voltage_and_current": 	{ 
-											"commandString": "APPLy %s, %s",
-											"arguments": "voltage {<voltage>}, current {<current>}",
-											"description": "This command is combination of VOLTage and CURRent commands. As long as the newly programmed values are within the presently selected range, the output voltage and current are changed as soon as the command is executed. The APPLy command changes the power supply’s output to the newly programmed values only if the programmed values are valid within the presently selected range. An execution error will occur if the programmed values are not valid within the selected range. You can substitute ‘‘MINimum’’, ‘‘MAXimum’’, or ‘‘DEFault’’ in place of a specific value for the voltage and current parameters. MIN selects the lowest values of ‘‘0’’ volts and ‘‘0’’ amps. MAX selects the highest values allowed for the selected range. The default values of voltage and current are ‘‘0’’ volts and ‘‘20’’* or ‘‘7’’** amps regardless of the presently selected range. For more details of parameters, see Table 4-1 for the Agilent E3633A model and Table 4-2 for the Agilent E3634A model. If you specify only one parameter of the APPLy command, the power supply regards it as voltage setting value."
+						"set_resistance": { 
+											"commandString": "RESistance %s",
+											"arguments": "resistance {<resistance>}",
+											"description": "This is an implied keyword that specifies the value of the programmed input resistance and whether that value is to be applied immediately or on occurrence of a trigger. If the specified channel is in the CR (constant-resistance) Mode, an IMMediate resistance level is transferred to the input as soon as the command is executed. A TRIGgered level is stored and transferred to the input when a trigger occurs. At that time, the change to the input level occurs at the presently active voltage slew rate (for the lowest resistance range) or presently active current slew rate (for the middle and highest ranges). Following the trigger event, subsequent triggers will not affect the input level unless the electronic load has been sent another TRIGgered level command. If the electronic load is not in the CR (Constant-Resistance) Mode when an IMMediate or TRIGgered level command is sent, the programmed levels are saved for the next time the electronic load is placed in the CR Mode. Triggered levels are processed by the Resistance Subsystem even when the electronic load is not in the CR Mode. Thus, the TRIGgered level becomes a stored IMMediate level that takes effect when the electronic load is again in the CR Mode."
 										},
-						"get_voltage": 	{ 
+						"set_transient_voltage": { 
+											"commandString": "VOLTage:TLEVel %s",
+											"arguments": "voltage {<voltage>}",
+											"description": "This command specifies the value of the programmed voltage level for the TRANsient input when the electronic load is in the CV (constant-voltage) Mode. When the Transient Subsystem is on, the electronic load input voltage will switch (under control of the Transient Subsystem) between the main level and TLEVel at a rate determined by the present value of SLEW. In order for input voltage level switching to occur, TLEVel must be greater than the main level. If TLEVel is set to a value below the main level, no error is generated but switching will not occur until the main level is subsequently programmed below the value of TLEVel. If TLEVel is programmed outside the specified range, an error is generated (see Table 4-2 at the end of this chapter)."
+										},
+						"set_transient_current": { 
+											"commandString": "CURRent:TLEVel %s",
+											"arguments": "current {<current>}",
+											"description": "This command specifies the value of the programmed current level for the TRANsient input when the electronic load is in the CC (constant-current) Mode. When the Transient Subsystem is on, the electronic load input current will switch (under control of the Transient Subsystem) between the main level and TLEVel at a rate determined by the present value of SLEW. In order for the input current level to switch, TLEVel must be set to a value greater than the main level. If TLEVel is set to a value below the main level, no error is generated but switching will not occur until the main level is subsequently programmed below the value of TLEVel. If TLEVel is programmed outside the specified range, an error is generated (see Table 4-2 at the end of this chapter)."
+										},
+						"set_transient_resistance": { 
+											"commandString": "RESistance:TLEVel %s",
+											"arguments": "resistance {<resistance>}",
+											"description": "This command specifies the value of the programmed resistance level for the TRANsient input when the electronic load is in the CR (constant-resistance) Mode. When the Transient Subsystem is on, the electronic load input resistance will switch (under control of the Transient Subsystem) between the main resistance and TLEVel at a rate determined by the present value of VOLT:SLEW (lowest resistance range) or by CURR:SLEW (middle and high resistance ranges). In order for input resistance level switching to occur, TLEVel must be programmed as follows: Lowest range: TLEVel > LEVel, Middle and highest ranges: TLEVel < LEVel. If the above rules are not followed, no error is generated but switching will not occur. If the main resistance is subsequently programmed to the proper level with respect to TLEVel, switching will begin provided the TRANsient subsystem is on. If TLEVel is programmed outside the specified range, an error is generated (see Table 4-2 at the end of this chapter)."
+										},
+						"set_range_current": { 
+											"commandString": "CURRent:RANGe %s",
+											"arguments": "range {<current>}",
+											"description": "This command selects the full-scale current range the electronic load. Programming any value within the low range automatically selects the low range and programming any value within the high range automatically selects that range. In the HP6060A for example, programming a value from 6 to 60 amperes automatically selects the 60-ampere range."
+										},
+						"set_range_resistance": { 
+											"commandString": "RESistance:RANGe %s",
+											"arguments": "range {<resistance>}",
+											"description": "This command selects the full-scale resistance range the electronic load. Programming any value equal to or greater than zero (>= 0) and less than or equal to (<=) the maximum value of the lowest range automatically selects that range. Programming any value greater than the minimum range and less than or equal the middle range automatically selects that range. There is no overlap between the low and middle ranges. Programming a value greater than the maximum value of the middle range automatically selects the highest range."
+										},
+						"set_slew_voltage": { 
+											"commandString": "VOLTage:SLEW %s",
+											"arguments": "slew {<slew (volts/second)>}",
+											"description": "This command sets the voltage programming slew rate and the resistance programming slew rate for lowest CR range. The programmed slew rate remains in effect for all programmed voltage changes except INPut ON or OFF. The hardware implements discrete slew rates (refer to the Electronic Load Operating Manual) and automatically selects the one that is closest to the programmed value. To determine the actual value, use the query VOLT:SLEW?."
+										},
+						"set_slew_current": { 
+											"commandString": "CURRent:SLEW %s",
+											"arguments": "slew {<slew (amps/second)>}",
+											"description": "This command sets the current programming slew rate for both CC mode ranges and the resistance programming slew rate for the middle and high CR mode ranges. The programmed slew rate is used for all programmed current changes except INPut ON or OFF. The hardware implements discrete slew rates (refer to the Electronic Load Operating Manual) and automatically selects the one that is closest to the programmed value. To determine the actual value, use the query CURR:SLEW?."
+										},
+						"set_mode": 	{ 
+											"commandString": "MODE:%s",
+											"arguments": "mode {CURRent|RESistance|VOLTage}",
+											"description": "This command selects the operating mode of the electronic load, which can be: CURRent Constant-current (CC) input, RESistance Constant-resistance (CR) input, VOLTage Constant-voltage (CV) input. If the mode is changed while the input is on, the input is mommentarily turned of as if INPut[:STATe] OFF were executed. However, changing modes does not change the state of the input nor does it turn off the TRANsient function. For multiple electronic loads, the mode of each channel is programmed independently."
+										},
+						"get_programmed_voltage": { 
 											"commandString": "VOLTage?",
 											"arguments": "",
-											"description": "This query returns the presently programmed voltage level of the power supply. VOLT? MAX and VOLT? MIN return the highest and lowest programmable voltage levels for the selected range."
+											"description": "This query returns the presently programmed voltage level."
 										},
-						"get_current": 	{ 
+						"get_programmed_current": { 
 											"commandString": "CURRent?",
 											"arguments": "",
-											"description": "This query returns the presently programmed current level of the power supply. CURR? MAX and CURR? MIN return the highest and lowest programmable current levels for the selected range."
+											"description": "This query returns the presently programmed current level."
 										},
-						"set_voltage_limit": 	{ 
-											"commandString": "VOLTage:PROTection %s",
-											"arguments": "voltage {<voltage>}",
-											"description": "This command sets the voltage level at which the overvoltage protection (OVP) circuit will trip. If the peak output voltage exceeds the OVP level, then the power supply output is shorted by an internal SCR. The Questionable Status register ‘‘OV’’ bit is set (see page 91). An overvoltage condition can be cleared with the VOLT:PROT:CLE command after the condition that caused the OVP trip is removed."
+						"get_programmed_resistance": { 
+											"commandString": "RESistance?",
+											"arguments": "",
+											"description": "This query returns the presently programmed input resistance level."
 										},
-						"set_current_limit": 	{ 
-											"commandString": "CURRent:PROTection %s",
-											"arguments": "current {<current>}",
-											"description": "This command sets the current level at which the overcurrent protection (OCP) circuit will trip. If the peak output current exceeds the OCP level, then the output current is programmed to zero. The Questionable Status register ‘‘OC’’ bit is set (see page 91). An overcurrent condition can be cleared with the CURR:PROT:CLE command after the condition that caused the OCP trip is removed."
+						"get_voltage": 	{ 
+											"commandString": "MEASure:VOLTage?",
+											"arguments": "",
+											"description": "This function consists of queries that return the current, voltage, and power at the input of the electronic load."
 										},
-						"set_range": 	{ 
-											"commandString": "VOLTage:RANGe %s",
-											"arguments": "range {P8V|P20V|LOW|HIGH}",
-											"description": "This command selects an output range to be programmed by the identifier. For example, when 8V/20A* range is selected, the maximum programmable voltage and current are limited to 8.24 volts and 20.60 amps. When 20V/10A* range is selected, the maximum programmable voltage and current are limited to 20.60 volts and 10.30 amps. See page 70 for more details of the programming ranges of the Agilent E3634A model. ‘‘P20V’’* or ‘‘HIGH’’ is the identifier for the 20V/10A* range and ‘‘P8V’’* or ‘‘LOW’’ is for the 8V/20A* range. At *RST, the 8V/20A* or 25V/7A** range is selected."
-										}
+						"get_current": 	{ 
+											"commandString": "MEASure:CURRent?",
+											"arguments": "",
+											"description": "This function consists of queries that return the current, voltage, and power at the input of the electronic load."
+										},
+						"get_power": 	{ 
+											"commandString": "MEASure:POWer?",
+											"arguments": "",
+											"description": "This function consists of queries that return the current, voltage, and power at the input of the electronic load."
+										},
+						"get_error": 	{ 
+											"commandString": "SYSTem:ERRor?",
+											"arguments": "",
+											"description": "This query reads the remote programming error queue of the electronic load. The queue, which operates in a FIFO (first-in-first-out) mode, records only programming errors - not front panel errors. As it is read, each error is removed from the queue. When all errors have been read, a zero is returned. Negatively numbered errors are generic HP-SL errors and positively numbered errors are specific to the electronic load. (see Table 4-2 at the end of this chapter) If the error queue should become full, error -350 will be returned."
+										}									
 					}
 }
