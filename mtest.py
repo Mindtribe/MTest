@@ -25,7 +25,7 @@ class Instrument(object):
     def connect(self):
         self.handle = visa.instrument(self.addressDict['serial'])
         #set termination characters so instrument knows when to stop listening and execute a command
-        self.handle.term_chars = '\r\n'
+        self.handle.term_chars = '\n'
 
     def disconnect(self):
         # return control to panel

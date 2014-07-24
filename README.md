@@ -26,7 +26,7 @@ OSX:
 
 1. Turn on Tektronix MSO 4104B-L
 
-2. Connect computer to Tektronix MSO 4104B-L via USB
+2. Connect computer to Tektronix MSO 4104B-L via IP
 
 3. Connect USB storage device to left USB port on Tektronix MSO 4104B-L front panel
 
