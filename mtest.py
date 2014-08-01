@@ -1,126 +1,189 @@
 import json
 import os
+import serial
 import visa
+from sys import platform
 
 #globals
 INSTRUMENT_DIRECTORY = './instruments'
+SERIAL_BAUDRATE = 9600
+SERIAL_READ_SIZE = 256 
+SERIAL_ADDRESS_OSX = '/dev/tty.usbserial-PXWYFRKG'
+SERIAL_ADDRESS_WINDOWS = 'COM5'
+MAC_OSX_ALIAS = 'darwin'
+WINDOWS_ALIAS = 'win32'
+LINUX_ALIAS = 'linux'
+LINUX2_ALIAS = 'linux2'
 
 #base class
 class Instrument(object):
 
-    def __init__(self, name):
+    def __init__(self, name, communicationProtocol='serial'):
         self.name = name
+        self.communicationProtocol = communicationProtocol
         instrumentFile = open(os.path.join(INSTRUMENT_DIRECTORY, name + '.json'))
         instrumentFileDict = json.load(instrumentFile)
-        self.addressDict = instrumentFileDict['addresses']
+        self.parametersDict = instrumentFileDict['parameters']
+        self.terminationCharacters = self.parametersDict['terminationCharacters']
+        if self.parametersDict['ipAddress'] == 'None':
+            self.ipAddress = None
+        else:
+            self.ipAddress = self.parametersDict['ipAddress']
+        if self.parametersDict['serialTimeout'] == 'None':
+            self.serialTimeout = None
+        else:
+            self.serialTimeout = float(self.parametersDict['serialTimeout'])
         self.commandDict = instrumentFileDict['commands']
         self.connect()
 
     def __del__(self):
         self.disconnect()
 
-    def get_command(self, commandName):
+    def get_command_string(self, commandName):
         return self.commandDict[commandName]['commandString']
 
+    def get_command_arguments(self, commandName):
+        return self.commandDict[commandName]['arguments']
+
+    def get_command_description(self, commandName):
+        return self.commandDict[commandName]['description']
+
+    def send_command(self, commandName, *parameters):
+        #form parameter tuple
+        parametersTuple = ()
+        for parameter in parameters:
+            #note that we typecast all parameters as strings here
+            parametersTuple += (str(parameter),)
+        if self.communicationProtocol is 'serial':
+            #note that pyserial no longer allows you to specify termination characters explicitly, so instead, we append them to the end of each command.
+            self.handle.write((self.get_command_string(commandName) % parametersTuple) + self.terminationCharacters)
+            return self.handle.read(SERIAL_READ_SIZE)
+        elif self.communicationProtocol is 'ethernet':
+            return self.handle.ask(self.get_command_string(commandName) % parametersTuple)
+
+
     def connect(self):
-        self.handle = visa.instrument(self.addressDict['serial'])
-        #set termination characters so instrument knows when to stop listening and execute a command
-        self.handle.term_chars = '\n'
+        if self.communicationProtocol is 'serial':
+            # Set up serial port depending on operating system according to Prologix instructions
+            if platform == MAC_OSX_ALIAS: 
+                self.handle = serial.Serial(SERIAL_ADDRESS_OSX, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+            elif platform == WINDOWS_ALIAS:
+                self.handle = serial.Serial(SERIAL_ADDRESS_WINDOWS, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+            elif platform == LINUX_ALIAS or platform == LINUX2_ALIAS:
+                print 'This library has not been tested on Linux. Attempting to connect using OSX protocol: '
+                self.handle = serial.Serial(SERIAL_ADDRESS_OSX, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+
+            #set Prologix GPIB USB to controller mode
+            self.handle.write('++mode 1\n')
+            self.handle.read(SERIAL_READ_SIZE)
+            #set GPIB address. Most instruments have default GPIB addresses of 5. Since we are actually making a serial connection, I think this is unncessary. Should possibly remove this later. 
+            self.handle.write('++addr 5\n')
+            self.handle.read(SERIAL_READ_SIZE)
+
+        elif self.communicationProtocol is 'ethernet':
+            #check if device can connect via ethernet
+            if self.ipAddress is None:
+                print 'Error. This instrument has not been configured to connect via ethernet. Please specify the instrument\'s IP address in its corresponding JSON file.'
+            else:
+                self.handle = visa.instrument(self.ipAddress)
+                #set termination characters so instrument knows when to stop listening and execute a command
+                self.handle.term_chars = self.terminationCharacters
 
     def disconnect(self):
-        # return control to panel
-        #self.handle.write('SYST:LOC')
-        self.handle.close()
+        if self.communicationProtocol is 'serial':
+            self.handle.close()
+        elif self.communicationProtocol is 'ethernet':
+            self.handle.close()
 
     def get_id(self):
-        return self.handle.ask(self.get_command('get_id'))
+        return self.send_command('get_id')
 
     def reset(self):
-        return self.handle.write(self.get_command('reset'))
+        return self.send_command('reset')
 
-#DC Power Supply class
+#dc power supply class
 class DCPowerSupply(Instrument):
     def set_output(self, output):
-        self.handle.write(self.get_command('set_output') % str(output))
+        self.send_command('set_output', output)
 
     def set_voltage(self, voltage):
-        self.handle.write(self.get_command('set_voltage') % str(voltage))
+        self.send_command('set_voltage', voltage)
 
     def set_current(self, current):
-        self.handle.write(self.get_command('set_current') % str(current))
+        self.send_command('set_current', current)
 
     def set_voltage_and_current(self, voltage, current):
-        self.handle.write(self.get_command('set_voltage_and_current') % (str(voltage), str(current)))
+        self.send_command('set_voltage_and_current', voltage, current)
 
     def get_voltage(self):
-        return (self.handle.ask(self.get_command('get_voltage')))
+        return self.send_command('get_voltage')
 
     def get_current(self):
-        return (self.handle.ask(self.get_command('get_current')))
+        return self.send_command('get_current')
 
     def set_voltage_limit(self, voltageLimit):
-        self.handle.write(self.get_command('set_voltage_limit') % str(voltageLimit))
+        self.send_command('set_voltage_limit', voltageLimit)
 
     def set_current_limit(self, currentLimit):
-        self.handle.write(self.get_command('set_current_limit') % str(currentLimit))
+        self.send_command('set_current_limit', currentLimit)
 
     def set_range(self, range):
-        self.handle.write(self.get_command('set_range') % str(range))
+        self.send_command('set_range', range)
 
-#Electronic Load class
+#electronic load class
 class ElectronicLoad(Instrument):
     def set_input(self, input):
-        self.handle.write(self.get_command('set_input') % str(input))
+        self.send_command('set_input', input)
 
     def set_voltage(self, voltage):
-        self.handle.write(self.get_command('set_voltage') % str(voltage))
+        self.send_command('set_voltage', voltage)
 
     def set_current(self, current):
-        self.handle.write(self.get_command('set_current') % str(current))
+        self.send_command('set_current', current)
 
     def set_resistance(self, resistance):
-        self.handle.write(self.get_command('set_resistance') % str(resistance))
+        self.send_command('set_resistance', resistance)
 
     def set_range_current(self, range):
-        self.handle.write(self.get_command('set_range_current') % str(range))
+        self.send_command('set_range_current', range)
 
     def set_range_resistance(self, range):
-        self.handle.write(self.get_command('set_range_resistance') % str(range))
+        self.send_command('set_range_resistance', range)
 
     def set_slew_voltage(self, slew):
-        self.handle.write(self.get_command('set_slew_voltage') % str(slew))
+        self.send_command('set_slew_voltage', slew)
 
     def set_slew_current(self, slew):
-        self.handle.write(self.get_command('set_slew_current') % str(slew))
+        self.send_command('set_slew_current', slew)
 
     def set_mode(self, mode):
-        self.handle.write(self.get_command('set_mode') % str(mode))
+        self.send_command('set_mode', mode)
 
     def get_programmed_voltage(self):
-        return (self.handle.ask(self.get_command('get_programmed_voltage')))
+        return self.send_command('get_programmed_voltage')
 
     def get_programmed_current(self):
-        return (self.handle.ask(self.get_command('get_programmed_current')))
+        return self.send_command('get_programmed_current')
 
     def get_programmed_resistance(self):
-        return (self.handle.ask(self.get_command('get_programmed_resistance')))
+        return self.send_command('get_programmed_resistance')
 
     def get_voltage(self):
-        return (self.handle.ask(self.get_command('get_voltage')))
+        return self.send_command('get_voltage')
 
     def get_current(self):
-        return (self.handle.ask(self.get_command('get_current')))
+        return self.send_command('get_current')
 
     def get_power(self):
-        return (self.handle.ask(self.get_command('get_power')))
+        return self.send_command('get_power')
 
-#Specific instrument classes
-#DC Power Supplies
+#specific instrument classes
+#dc power supplies
 class AgilentE3631A(DCPowerSupply):
     def get_version(self):
-        return self.handle.ask(self.get_command('get_version'))
+        return self.send_command('get_version')
 
-#Electronic Loads
+#electronic loads
 class Agilent6060B(ElectronicLoad):
     def get_error(self):
-        return self.handle.ask(self.get_command('get_error'))
+        return self.send_command('get_error')

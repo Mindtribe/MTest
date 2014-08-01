@@ -1,8 +1,8 @@
 {	
-	"addresses":	{
-						"gpib": "None",
-						"serial": "ASRL3",
-						"ip": "None"
+	"parameters":	{
+						"ipAddress": "None",
+						"terminationCharacters": "\n",
+						"serialTimeout": "None"
 					},
 	"commands": 	{
 						"get_id": 		{ 
