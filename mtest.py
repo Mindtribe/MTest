@@ -39,14 +39,21 @@ class Instrument(object):
     def __del__(self):
         self.disconnect()
 
+    def print_commands(self):
+        for command in self.commandDict:
+            print command
+
+    def print_command_description(self, commandName):
+        print self.commandDict[commandName]['description']
+
+    def print_command_arguments(self, commandName):
+        print self.commandDict[commandName]['arguments']
+
     def get_command_string(self, commandName):
         return self.commandDict[commandName]['commandString']
 
     def get_command_arguments(self, commandName):
         return self.commandDict[commandName]['arguments']
-
-    def get_command_description(self, commandName):
-        return self.commandDict[commandName]['description']
 
     def send_command(self, commandName, *parameters):
         #form parameter tuple

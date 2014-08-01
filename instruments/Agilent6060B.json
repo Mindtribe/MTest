@@ -17,7 +17,7 @@
 										},										
 						"set_input": 	{ 
 											"commandString": "INPut %s",
-											"arguments": "output {OFF|ON}",
+											"arguments": "input {OFF|ON}",
 											"description": "This implied keyword turns the electronic load input ON and OFF. When INPut is OFF, the electronic load will draw minimal current at its input. INP[STAT]e:OFF overrides INPut:SHORt:ON. The presently programmed slew rate setting is not used when turning the input on or off; the current and voltage change at their maximum rates."
 										},
 						"set_voltage": 	{ 
