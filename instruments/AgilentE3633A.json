@@ -2,7 +2,7 @@
 	"parameters":	{
 						"ipAddress": "None",
 						"terminationCharacters": "\n",
-						"serialTimeout": "None"
+						"serialTimeout": "0.2"
 					},
 	"commands": 	{
 						"get_id": 		{ 
@@ -43,11 +43,21 @@
 											"description": "This command is combination of VOLTage and CURRent commands. As long as the newly programmed values are within the presently selected range, the output voltage and current are changed as soon as the command is executed. The APPLy command changes the power supply’s output to the newly programmed values only if the programmed values are valid within the presently selected range. An execution error will occur if the programmed values are not valid within the selected range. You can substitute ‘‘MINimum’’, ‘‘MAXimum’’, or ‘‘DEFault’’ in place of a specific value for the voltage and current parameters. MIN selects the lowest values of ‘‘0’’ volts and ‘‘0’’ amps. MAX selects the highest values allowed for the selected range. The default values of voltage and current are ‘‘0’’ volts and ‘‘20’’* or ‘‘7’’** amps regardless of the presently selected range. For more details of parameters, see Table 4-1 for the Agilent E3633A model and Table 4-2 for the Agilent E3634A model. If you specify only one parameter of the APPLy command, the power supply regards it as voltage setting value."
 										},
 						"get_voltage": 	{ 
+											"commandString": "MEASure:VOLTage?",
+											"arguments": "",
+											"description": "This command queries the voltage measured at the sense terminals of the power supply."
+										},
+						"get_current": 	{ 
+											"commandString": "MEASure:CURRent?",
+											"arguments": "",
+											"description": "This command queries the current measured across the current sense resistor inside the power supply."
+										},
+						"get_programmed_voltage": 	{ 
 											"commandString": "VOLTage?",
 											"arguments": "",
 											"description": "This query returns the presently programmed voltage level of the power supply. VOLT? MAX and VOLT? MIN return the highest and lowest programmable voltage levels for the selected range."
 										},
-						"get_current": 	{ 
+						"get_programmed_current": 	{ 
 											"commandString": "CURRent?",
 											"arguments": "",
 											"description": "This query returns the presently programmed current level of the power supply. CURR? MAX and CURR? MIN return the highest and lowest programmable current levels for the selected range."

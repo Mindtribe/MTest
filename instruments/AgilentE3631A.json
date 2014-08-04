@@ -1,0 +1,71 @@
+{	
+	"parameters":	{
+						"ipAddress": "None",
+						"terminationCharacters": "\n",
+						"serialTimeout": "0.2"
+					},
+	"commands": 	{
+						"get_id": 		{ 
+											"commandString": "*IDN?",
+											"arguments": "",
+											"description": "This query command reads the power supply’s identification string. The power supply returns four fields separated by commas. The first field is the manufacturer’s name, the second field is the model number, the third field is not used (always '0'), and the fourth field is a revision code which contains three numbers. The first number is the firmware revision number for the main power supply processor; the second is for the input/output processor; and the third is for the front-panel processor. The command returns a string with the following format (be sure to dimension a string variable with at least 40 characters): HEWLETT-PACKARD,E3633A or E3634A,0,X.X-X.X-X.X"
+										},
+						"get_version": 	{ 
+											"commandString": "SYSTem:VERSion?",
+											"arguments": "",
+											"description": "This command queries the power supply to determine the present SCPI version. The returned value is of a string in the form YYYY.V where the “Y’s” represent the year of the version, and the “V” represents a version number for that year (for example, 1995.0)."
+										},
+						"reset": 		{ 
+											"commandString": "*RST",
+											"arguments": "",
+											"description": "This command resets the power supply to its power-on state."
+										},										
+						"set_output": 	{ 
+											"commandString": "OUTPut %s",
+											"arguments": "output {OFF|ON}",
+											"description": "This command enables or disables all three outputs of the power supply. The state of the disabled outputs is a condition of less than 0.6 volts of opposite polarity with no load and less than 60 mA of opposite direction with a short circuit. At *RST, the output state is off."
+										},
+
+						"set_voltage": 	{ 
+											"commandString": "VOLTage %s",
+											"arguments": "voltage {<voltage>}",
+											"description": "This command directly programs the immediate voltage level of the power supply. The immediate level is the voltage limit value of the selected output with the INSTrument command."
+										},
+
+						"set_current": 	{ 
+											"commandString": "CURRent %s",
+											"arguments": "current {<current>}",
+											"description": "This command directly programs the immediate current level of the power supply. The immediate level is the current limit value of the output selected with the INSTrument command."
+										},
+						"set_voltage_and_current": 	{ 
+											"commandString": "APPLy %s, %s, %s",
+											"arguments": "range {P6V|P25V|N25V}, voltage {<voltage>}, current {<current>}",
+											"description": "This command is combination of INSTrument:SELect, [SOURce:] VOLTage, and [SOURce:]CURRent commands. The values of voltage and the current of the specified output are changed as soon as the command is executed. You can identify each output by the output name (P6V, P25V or N25V) as described in Table 4-1. For the voltage and current parameters of the APPLy command, the ranges depend on the output currently selected. You can substitute “MINimum”, “MAXimum”, or “DEFault” in place of a specific value for the voltage and current parameters. MIN selects the lowest voltage and current values allowed for the selected output. MAX selects the highest voltage and current values allowed. The default voltage values are 0 volts for all outputs. The default current values are 5 A for +6V output and 1 A for ±25V outputs. The default voltage and current values are exactly the same as the *RST values. See Table 4-1 for details of parameters. If you specify only one value for the parameter, the power supply regards it as voltage setting value. If you do not specify any value for the parameter, the APPLy command only selects the output specified and acts as the INSTrument command."
+										},
+						"get_voltage": 	{ 
+											"commandString": "MEASure:VOLTage?",
+											"arguments": "",
+											"description": "This command queries the voltage measured at the output terminals of the power supply. If any output identifier is not specified, the voltage of the currently selected output is returned."
+										},
+						"get_current": 	{ 
+											"commandString": "MEASure:CURRent?",
+											"arguments": "",
+											"description": "This command queries the current measured at the output terminals of the power supply. The physical outputs of measurement are specified by the output identifier. If any output identifier is not specified, the current of the currently selected output is returned."
+										},
+						"get_programmed_voltage": 	{ 
+											"commandString": "VOLTage?",
+											"arguments": "",
+											"description": "This query returns the presently programmed triggered voltage level. If no triggered level is programmed, the VOLTage level is returned. VOLTage:TRIGgered? MAXimum and VOLTage:TRIGgered? MINimum return the maximum and minimum programmable triggered voltage levels."
+										},
+						"get_programmed_current": 	{ 
+											"commandString": "CURRent?",
+											"arguments": "",
+											"description": "This query returns the presently programmed triggered current level. If no triggered level is programmed, the CURRent level is returned. CURRent :TRIGgered? MAXimum and CURRent:TRIGgered? MINimum return the maximum and minimum programmable triggered current levels."
+										},
+						"set_range": 	{ 
+											"commandString": "VOLTage:RANGe %s",
+											"arguments": "range {P6V|P25V|N25V}",
+											"description": "This command selects an output range to be programmed by the identifier. For example, when 8V/20A* range is selected, the maximum programmable voltage and current are limited to 8.24 volts and 20.60 amps. When 20V/10A* range is selected, the maximum programmable voltage and current are limited to 20.60 volts and 10.30 amps. See page 70 for more details of the programming ranges of the Agilent E3634A model. ‘‘P20V’’* or ‘‘HIGH’’ is the identifier for the 20V/10A* range and ‘‘P8V’’* or ‘‘LOW’’ is for the 8V/20A* range. At *RST, the 8V/20A* or 25V/7A** range is selected."
+										}
+					}
+}

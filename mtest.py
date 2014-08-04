@@ -8,7 +8,7 @@ from sys import platform
 INSTRUMENT_DIRECTORY = './instruments'
 SERIAL_BAUDRATE = 9600
 SERIAL_READ_SIZE = 256 
-SERIAL_ADDRESS_OSX = '/dev/tty.usbserial-PXWYFRKG'
+SERIAL_ADDRESSES_OSX = ['/dev/tty.usbserial-PXWYFRKG', '/dev/tty.usbserial-PXHF1TCW']
 SERIAL_ADDRESS_WINDOWS = 'COM5'
 MAC_OSX_ALIAS = 'darwin'
 WINDOWS_ALIAS = 'win32'
@@ -24,7 +24,7 @@ class Instrument(object):
         instrumentFile = open(os.path.join(INSTRUMENT_DIRECTORY, name + '.json'))
         instrumentFileDict = json.load(instrumentFile)
         self.parametersDict = instrumentFileDict['parameters']
-        self.terminationCharacters = self.parametersDict['terminationCharacters']
+        self.terminationCharacters = str(self.parametersDict['terminationCharacters'])
         if self.parametersDict['ipAddress'] == 'None':
             self.ipAddress = None
         else:
@@ -50,7 +50,7 @@ class Instrument(object):
         print self.commandDict[commandName]['arguments']
 
     def get_command_string(self, commandName):
-        return self.commandDict[commandName]['commandString']
+        return str(self.commandDict[commandName]['commandString'])
 
     def get_command_arguments(self, commandName):
         return self.commandDict[commandName]['arguments']
@@ -73,7 +73,14 @@ class Instrument(object):
         if self.communicationProtocol is 'serial':
             # Set up serial port depending on operating system according to Prologix instructions
             if platform == MAC_OSX_ALIAS: 
-                self.handle = serial.Serial(SERIAL_ADDRESS_OSX, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+                for serialAddress in SERIAL_ADDRESSES_OSX:
+                    try:
+                        print 'Connecting to %s...' % serialAddress
+                        self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+                        print 'Connected.'
+                    except:
+                        print 'Could not connect to %s.' %serialAddress
+                self.handle.read(SERIAL_READ_SIZE)
             elif platform == WINDOWS_ALIAS:
                 self.handle = serial.Serial(SERIAL_ADDRESS_WINDOWS, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
             elif platform == LINUX_ALIAS or platform == LINUX2_ALIAS:
@@ -110,6 +117,9 @@ class Instrument(object):
 
 #dc power supply class
 class DCPowerSupply(Instrument):
+    def get_version(self):
+        return self.send_command('get_version')
+
     def set_output(self, output):
         self.send_command('set_output', output)
 
@@ -119,20 +129,17 @@ class DCPowerSupply(Instrument):
     def set_current(self, current):
         self.send_command('set_current', current)
 
-    def set_voltage_and_current(self, voltage, current):
-        self.send_command('set_voltage_and_current', voltage, current)
-
     def get_voltage(self):
         return self.send_command('get_voltage')
 
     def get_current(self):
         return self.send_command('get_current')
 
-    def set_voltage_limit(self, voltageLimit):
-        self.send_command('set_voltage_limit', voltageLimit)
+    def get_programmed_voltage(self):
+        return self.send_command('get_programmed_voltage')
 
-    def set_current_limit(self, currentLimit):
-        self.send_command('set_current_limit', currentLimit)
+    def get_programmed_current(self):
+        return self.send_command('get_programmed_current')
 
     def set_range(self, range):
         self.send_command('set_range', range)
@@ -187,8 +194,18 @@ class ElectronicLoad(Instrument):
 #specific instrument classes
 #dc power supplies
 class AgilentE3631A(DCPowerSupply):
-    def get_version(self):
-        return self.send_command('get_version')
+    def set_voltage_and_current(self, range, voltage, current):
+        self.send_command('set_voltage_and_current', range, voltage, current)
+
+class AgilentE3633A(DCPowerSupply):
+    def set_voltage_and_current(self, voltage, current):
+        self.send_command('set_voltage_and_current', voltage, current)
+
+    def set_voltage_limit(self, voltageLimit):
+        self.send_command('set_voltage_limit', voltageLimit)
+
+    def set_current_limit(self, currentLimit):
+        self.send_command('set_current_limit', currentLimit)
 
 #electronic loads
 class Agilent6060B(ElectronicLoad):
