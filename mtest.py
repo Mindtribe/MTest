@@ -61,9 +61,6 @@ class Instrument(object):
     def get_command_string(self, commandName):
         return str(self.commandDict[commandName]['commandString'])
 
-    def get_command_arguments(self, commandName):
-        return self.commandDict[commandName]['arguments']
-
     def send_command(self, commandName, *parameters):
         #form parameter tuple
         parametersTuple = ()
