@@ -1,0 +1,20 @@
+{	
+	"parameters":	{
+						"usbAddress": "USB0::0x0699::0x041C::C025028",
+						"ipAddress": "TCPIP::192.168.171.84",
+						"terminationCharacters": "\n",
+						"serialTimeout": "None"
+					},
+	"commands": 	{
+						"get_id": 		{ 
+											"commandString": "*IDN?",
+											"arguments": "",
+											"description": "This query requests the oscilloscope to identify itself"
+										},
+						"reset": 		{ 
+											"commandString": "*RST",
+											"arguments": "",
+											"description": "This command sets the oscilloscope to its factory-defined state."
+										}													
+					}
+}
