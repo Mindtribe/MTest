@@ -1,5 +1,6 @@
 import json
 import os
+import glob
 import serial
 import visa
 from sys import platform
@@ -13,7 +14,7 @@ from BeautifulSoup import BeautifulSoup as soup
 INSTRUMENT_DIRECTORY = './instruments'
 SERIAL_BAUDRATE = 9600
 SERIAL_READ_SIZE = 256 
-SERIAL_ADDRESSES_OSX = ['/dev/tty.usbserial-PXWYFRKG', '/dev/tty.usbserial-PXHF1TCW']
+SERIAL_ADDRESSES_OSX = glob.glob('/dev/tty.usbserial*')
 SERIAL_ADDRESS_WINDOWS = 'COM5'
 MAC_OSX_ALIAS = 'darwin'
 WINDOWS_ALIAS = 'win32'
@@ -78,6 +79,9 @@ class Instrument(object):
 
 
     def connect(self):
+        #refresh SERIAL_ADDRESSES_OSX in case a serial controller was connected after mtest was imported. 
+        SERIAL_ADDRESSES_OSX = glob.glob('/dev/tty.usbserial*')
+        print SERIAL_ADDRESSES_OSX
         if self.communicationProtocol is 'serial':
             # Set up serial port depending on operating system according to Prologix instructions
             if platform == MAC_OSX_ALIAS: 
@@ -149,16 +153,16 @@ class DCPowerSupply(Instrument):
         self.send_command('set_current', current)
 
     def get_voltage(self):
-        return self.send_command('get_voltage')
+        return float(self.send_command('get_voltage'))
 
     def get_current(self):
-        return self.send_command('get_current')
+        return float(self.send_command('get_current'))
 
     def get_programmed_voltage(self):
-        return self.send_command('get_programmed_voltage')
+        return float(self.send_command('get_programmed_voltage'))
 
     def get_programmed_current(self):
-        return self.send_command('get_programmed_current')
+        return float(self.send_command('get_programmed_current'))
 
     def set_range(self, range):
         self.send_command('set_range', range)
@@ -193,22 +197,22 @@ class ElectronicLoad(Instrument):
         self.send_command('set_mode', mode)
 
     def get_programmed_voltage(self):
-        return self.send_command('get_programmed_voltage')
+        return float(self.send_command('get_programmed_voltage'))
 
     def get_programmed_current(self):
-        return self.send_command('get_programmed_current')
+        return float(self.send_command('get_programmed_current'))
 
     def get_programmed_resistance(self):
-        return self.send_command('get_programmed_resistance')
+        return float(self.send_command('get_programmed_resistance'))
 
     def get_voltage(self):
-        return self.send_command('get_voltage')
+        return float(self.send_command('get_voltage'))
 
     def get_current(self):
-        return self.send_command('get_current')
+        return float(self.send_command('get_current'))
 
     def get_power(self):
-        return self.send_command('get_power')
+        return float(self.send_command('get_power'))
 
 #oscilloscope class
 class Oscilloscope(Instrument):
