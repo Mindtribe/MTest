@@ -3,7 +3,7 @@
 						"usbAddress": "USB0::0x0699::0x041C::C025028",
 						"ipAddress": "TCPIP::192.168.171.84",
 						"terminationCharacters": "\n",
-						"serialTimeout": "None"
+						"serialTimeout": "0.2"
 					},
 	"commands": 	{
 						"get_id": 		{ 
