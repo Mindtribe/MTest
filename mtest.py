@@ -254,23 +254,26 @@ class TektronixMSO4104BL(Oscilloscope):
             #send stop command to freeze waveforms
             self.handle.write("ACQuire:STATE STOP")
 
-            #create unique timestamped filename
-            timestr = time.strftime('%Y%m%d-%H%M%S')
-            #create directory to save screen captures and final csv file with all channel waveforms
-            outputDir = os.path.join('E:', timestr + '-scope-capture')
-            self.handle.write("FILESystem:MKDir \"" + outputDir + "\"")
+            drives = ['E:', 'F:']
+            #attempt to write to both drives so the user does not have to specify which USB port they connected their thumb drive to
+            for drive in drives:
+                #create unique timestamped filename
+                timestr = time.strftime('%Y%m%d-%H%M%S')
+                #create directory to save screen captures and final csv file with all channel waveforms
+                outputDir = os.path.join(drive, timestr + '-scope-capture')
+                self.handle.write("FILESystem:MKDir \"" + outputDir + "\"")
 
-            #save waveforms
-            waveformsFilename = os.path.join(outputDir, OUTPUT_WAVEFORMS_FILENAME + OUTPUT_WAVEFORMS_FILE_EXTENSION)
-            self.handle.write("SAVE:WAVEFORM ALL,\"" + waveformsFilename + "\"")
-            while '1' in self.handle.ask("BUSY?"):
-                    time.sleep(WAIT_TIME)
+                #save waveforms
+                waveformsFilename = os.path.join(outputDir, OUTPUT_WAVEFORMS_FILENAME + OUTPUT_WAVEFORMS_FILE_EXTENSION)
+                self.handle.write("SAVE:WAVEFORM ALL,\"" + waveformsFilename + "\"")
+                while '1' in self.handle.ask("BUSY?"):
+                        time.sleep(WAIT_TIME)
 
-            #save screencapture
-            screenCaptureFilename = os.path.join(outputDir, OUTPUT_SCREENCAPTURE_FILENAME + OUTPUT_SCREENCAPTURE_FILE_EXTENSION)
-            self.handle.write("SAVE:IMAGE \"" + screenCaptureFilename + "\"")
-            while '1' in self.handle.ask("BUSY?"):
-                    time.sleep(WAIT_TIME)
+                #save screencapture
+                screenCaptureFilename = os.path.join(outputDir, OUTPUT_SCREENCAPTURE_FILENAME + OUTPUT_SCREENCAPTURE_FILE_EXTENSION)
+                self.handle.write("SAVE:IMAGE \"" + screenCaptureFilename + "\"")
+                while '1' in self.handle.ask("BUSY?"):
+                        time.sleep(WAIT_TIME)
 
             #send run command to unfreeze waveforms
             self.handle.write("ACQuire:STATE RUN")
