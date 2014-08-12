@@ -7,7 +7,10 @@ A python library for instrumentation control.
 ## Dependencies
 
 * Python 2.7.5
-* PyVISA
+* PyVISA 1.5
+* mechanize 0.2.5
+* BeautifulSoup 3.2.1
+* pyserial 2.7
 * NI-VISA 5.4.1 
 
 ## Installation
@@ -22,7 +25,15 @@ OSX:
    This creates an alias for 32-bit python. You will need to call all functions from 32-bit
    python since NI-VISA is a 32-bit library. 
 
-## Example: Quick capture from Tektronix MSO 4104B-L Oscilloscope.
+WINDOWS:
+
+1. Install NI-VISA 5.4.1: http://www.ni.com/download/ni-visa-5.4.1/4626/en/
+
+2. Install python dependencies: pip install -r requirements.txt
+
+## Examples
+
+Quick capture from Tektronix MSO 4104B-L Oscilloscope:
 
 1. Turn on Tektronix MSO 4104B-L
 
