@@ -113,6 +113,7 @@ class Instrument(object):
                             self.handle = visa.instrument(serialAddress)
                             print 'Connected.'
                             self.serialAddress = serialAddress
+                            break
                         except:
                             print 'Could not connect to %s.' %serialAddress
                 elif platform == LINUX_ALIAS or platform == LINUX2_ALIAS:
@@ -123,6 +124,7 @@ class Instrument(object):
                             self.handle = visa.instrument(serialAddress)
                             print 'Connected.'
                             self.serialAddress = serialAddress
+                            break
                         except:
                             print 'Could not connect to %s.' %serialAddress
 
