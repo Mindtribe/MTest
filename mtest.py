@@ -24,7 +24,7 @@ LINUX2_ALIAS = 'linux2'
 #base class
 class Instrument(object):
 
-    def __init__(self, name, communicationProtocol='serial'):
+    def __init__(self, name, communicationProtocol='serial', serialAddress=None):
         self.name = name
         self.communicationProtocol = communicationProtocol
         instrumentFile = open(os.path.join(INSTRUMENT_DIRECTORY, name + '.json'))
@@ -69,42 +69,52 @@ class Instrument(object):
             #note that we typecast all parameters as strings here
             parametersTuple += (str(parameter),)
         if self.communicationProtocol is 'serial':
-            #note that pyserial no longer allows you to specify termination characters explicitly, so instead, we append them to the end of each command.
-            self.handle.write((self.get_command_string(commandName) % parametersTuple) + self.terminationCharacters)
-            return self.handle.read(SERIAL_READ_SIZE)
+            # #note that pyserial no longer allows you to specify termination characters explicitly, so instead, we append them to the end of each command.
+            # self.handle.write((self.get_command_string(commandName) % parametersTuple) + self.terminationCharacters)
+            # return self.handle.read(SERIAL_READ_SIZE)
+            return self.handle.ask(self.get_command_string(commandName) % parametersTuple)
         elif self.communicationProtocol is 'ethernet':
             return self.handle.ask(self.get_command_string(commandName) % parametersTuple)
         elif self.communicationProtocol is 'usb':
             return self.handle.ask(self.get_command_string(commandName) % parametersTuple)
 
+    def write_command(self, commandName, *parameters):
+        #form parameter tuple
+        parametersTuple = ()
+        for parameter in parameters:
+            #note that we typecast all parameters as strings here
+            parametersTuple += (str(parameter),)
+        if self.communicationProtocol is 'serial':
+            self.handle.write(self.get_command_string(commandName) % parametersTuple)
 
     def connect(self):
         #refresh SERIAL_ADDRESSES_OSX in case a serial controller was connected after mtest was imported. 
         SERIAL_ADDRESSES_OSX = glob.glob('/dev/tty.usbserial*')
         print SERIAL_ADDRESSES_OSX
         if self.communicationProtocol is 'serial':
-            # Set up serial port depending on operating system according to Prologix instructions
-            if platform == MAC_OSX_ALIAS: 
-                for serialAddress in SERIAL_ADDRESSES_OSX:
-                    try:
-                        print 'Connecting to %s...' % serialAddress
-                        self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-                        print 'Connected.'
-                    except:
-                        print 'Could not connect to %s.' %serialAddress
-                self.handle.read(SERIAL_READ_SIZE)
-            elif platform == WINDOWS_ALIAS:
-                self.handle = serial.Serial(SERIAL_ADDRESS_WINDOWS, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-            elif platform == LINUX_ALIAS or platform == LINUX2_ALIAS:
-                print 'This library has not been tested on Linux. Attempting to connect using OSX protocol: '
-                self.handle = serial.Serial(SERIAL_ADDRESS_OSX, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+            # # Set up serial port depending on operating system according to Prologix instructions
+            # if platform == MAC_OSX_ALIAS: 
+            #     for serialAddress in SERIAL_ADDRESSES_OSX:
+            #         try:
+            #             print 'Connecting to %s...' % serialAddress
+            #             self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+            #             print 'Connected.'
+            #         except:
+            #             print 'Could not connect to %s.' %serialAddress
+            #     self.handle.read(SERIAL_READ_SIZE)
+            # elif platform == WINDOWS_ALIAS:
+            #     self.handle = serial.Serial(SERIAL_ADDRESS_WINDOWS, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+            # elif platform == LINUX_ALIAS or platform == LINUX2_ALIAS:
+            #     print 'This library has not been tested on Linux. Attempting to connect using OSX protocol: '
+            #     self.handle = serial.Serial(SERIAL_ADDRESS_OSX, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
 
-            #set Prologix GPIB USB to controller mode
-            self.handle.write('++mode 1\n')
-            self.handle.read(SERIAL_READ_SIZE)
-            #set GPIB address. Most instruments have default GPIB addresses of 5. Since we are actually making a serial connection, I think this is unncessary. Should possibly remove this later. 
-            self.handle.write('++addr 5\n')
-            self.handle.read(SERIAL_READ_SIZE)
+            # #set Prologix GPIB USB to controller mode
+            # self.handle.write('++mode 1\n')
+            # self.handle.read(SERIAL_READ_SIZE)
+            # #set GPIB address. Most instruments have default GPIB addresses of 5. Since we are actually making a serial connection, I think this is unncessary. Should possibly remove this later. 
+            # self.handle.write('++addr 5\n')
+            # self.handle.read(SERIAL_READ_SIZE)
+            self.handle = visa.instrument('ASRL3')
 
         elif self.communicationProtocol is 'ethernet':
             #check if device can connect via ethernet
@@ -170,31 +180,31 @@ class DCPowerSupply(Instrument):
 #electronic load class
 class ElectronicLoad(Instrument):
     def set_input(self, input):
-        self.send_command('set_input', input)
+        self.write_command('set_input', input)
 
     def set_voltage(self, voltage):
-        self.send_command('set_voltage', voltage)
+        self.write_command('set_voltage', voltage)
 
     def set_current(self, current):
-        self.send_command('set_current', current)
+        self.write_command('set_current', current)
 
     def set_resistance(self, resistance):
-        self.send_command('set_resistance', resistance)
+        self.write_command('set_resistance', resistance)
 
     def set_range_current(self, range):
-        self.send_command('set_range_current', range)
+        self.write_command('set_range_current', range)
 
     def set_range_resistance(self, range):
-        self.send_command('set_range_resistance', range)
+        self.write_command('set_range_resistance', range)
 
     def set_slew_voltage(self, slew):
-        self.send_command('set_slew_voltage', slew)
+        self.write_command('set_slew_voltage', slew)
 
     def set_slew_current(self, slew):
-        self.send_command('set_slew_current', slew)
+        self.write_command('set_slew_current', slew)
 
     def set_mode(self, mode):
-        self.send_command('set_mode', mode)
+        self.write_command('set_mode', mode)
 
     def get_programmed_voltage(self):
         return float(self.send_command('get_programmed_voltage'))
