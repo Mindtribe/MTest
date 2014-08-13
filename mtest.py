@@ -12,10 +12,8 @@ from BeautifulSoup import BeautifulSoup as soup
 
 #globals
 INSTRUMENT_DIRECTORY = './instruments'
-SERIAL_BAUDRATE = 9600
-SERIAL_READ_SIZE = 256 
-SERIAL_ADDRESSES_OSX = glob.glob('/dev/tty.usbserial*')
-SERIAL_ADDRESS_WINDOWS = 'COM5'
+SERIAL_ADDRESSES_OSX = ['ASRL1', 'ASRL2', 'ASRL3', 'ASRL4', 'ASRL5', 'ASRL6', 'ASRL7', 'ASRL8', 'ASRL9']
+SERIAL_ADDRESSES_WINDOWS = ['COM1', 'COM2', 'COM3', 'COM4', 'COM5', 'COM6', 'COM7', 'COM8', 'COM9']
 MAC_OSX_ALIAS = 'darwin'
 WINDOWS_ALIAS = 'win32'
 LINUX_ALIAS = 'linux'
@@ -27,6 +25,7 @@ class Instrument(object):
     def __init__(self, name, communicationProtocol='serial', serialAddress=None):
         self.name = name
         self.communicationProtocol = communicationProtocol
+        self.serialAddress = serialAddress
         instrumentFile = open(os.path.join(INSTRUMENT_DIRECTORY, name + '.json'))
         instrumentFileDict = json.load(instrumentFile)
         self.parametersDict = instrumentFileDict['parameters']
@@ -88,33 +87,44 @@ class Instrument(object):
             self.handle.write(self.get_command_string(commandName) % parametersTuple)
 
     def connect(self):
-        #refresh SERIAL_ADDRESSES_OSX in case a serial controller was connected after mtest was imported. 
-        SERIAL_ADDRESSES_OSX = glob.glob('/dev/tty.usbserial*')
-        print SERIAL_ADDRESSES_OSX
+        # #refresh SERIAL_ADDRESSES_OSX in case a serial controller was connected after mtest was imported. 
+        # SERIAL_ADDRESSES_OSX = glob.glob('/dev/tty.usbserial*')
         if self.communicationProtocol is 'serial':
-            # # Set up serial port depending on operating system according to Prologix instructions
-            # if platform == MAC_OSX_ALIAS: 
-            #     for serialAddress in SERIAL_ADDRESSES_OSX:
-            #         try:
-            #             print 'Connecting to %s...' % serialAddress
-            #             self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-            #             print 'Connected.'
-            #         except:
-            #             print 'Could not connect to %s.' %serialAddress
-            #     self.handle.read(SERIAL_READ_SIZE)
-            # elif platform == WINDOWS_ALIAS:
-            #     self.handle = serial.Serial(SERIAL_ADDRESS_WINDOWS, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-            # elif platform == LINUX_ALIAS or platform == LINUX2_ALIAS:
-            #     print 'This library has not been tested on Linux. Attempting to connect using OSX protocol: '
-            #     self.handle = serial.Serial(SERIAL_ADDRESS_OSX, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-
-            # #set Prologix GPIB USB to controller mode
-            # self.handle.write('++mode 1\n')
-            # self.handle.read(SERIAL_READ_SIZE)
-            # #set GPIB address. Most instruments have default GPIB addresses of 5. Since we are actually making a serial connection, I think this is unncessary. Should possibly remove this later. 
-            # self.handle.write('++addr 5\n')
-            # self.handle.read(SERIAL_READ_SIZE)
-            self.handle = visa.instrument('ASRL3')
+            if self.serialAddress is not None:
+                print 'Connecting to %s...' % self.serialAddress
+                self.handle = visa.instrument(self.serialAddress)
+                print 'Connected.'
+            else:
+                # Set up serial port depending on operating system
+                if platform == MAC_OSX_ALIAS: 
+                    for serialAddress in SERIAL_ADDRESSES_OSX:
+                        try:
+                            print 'Connecting to %s...' % serialAddress
+                            self.handle = visa.instrument(serialAddress)
+                            print 'Connected.'
+                            self.serialAddress = serialAddress
+                            break
+                        except:
+                            print 'Could not connect to %s.' %serialAddress
+                elif platform == WINDOWS_ALIAS:
+                    for serialAddress in SERIAL_ADDRESSES_WINDOWS:
+                        try:
+                            print 'Connecting to %s...' % serialAddress
+                            self.handle = visa.instrument(serialAddress)
+                            print 'Connected.'
+                            self.serialAddress = serialAddress
+                        except:
+                            print 'Could not connect to %s.' %serialAddress
+                elif platform == LINUX_ALIAS or platform == LINUX2_ALIAS:
+                    print 'This library has not been tested on Linux. Attempting to connect using OSX protocol: '
+                    for serialAddress in SERIAL_ADDRESSES_OSX:
+                        try:
+                            print 'Connecting to %s...' % serialAddress
+                            self.handle = visa.instrument(serialAddress)
+                            print 'Connected.'
+                            self.serialAddress = serialAddress
+                        except:
+                            print 'Could not connect to %s.' %serialAddress
 
         elif self.communicationProtocol is 'ethernet':
             #check if device can connect via ethernet
