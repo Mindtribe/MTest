@@ -86,9 +86,8 @@ class Instrument(object):
             SERIAL_ADDRESSES_OSX = glob.glob('/dev/tty.usbserial*')
             if self.serialAddress is not None:
                 try:
-                    print 'Connecting to %s...' % self.serialAddress
                     self.handle = serial.Serial(self.serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-                    print 'Connected.'
+                    print '%s connected to %s.' % (self.name, self.serialAddress)
                 except:
                     print 'Could not connect to %s.' %serialAddress
                 self.handle.read(SERIAL_READ_SIZE)
@@ -98,7 +97,6 @@ class Instrument(object):
                     for serialAddress in SERIAL_ADDRESSES_OSX:
                         if self.serialAddress is None:
                             try:
-                                print serialAddress
                                 self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
                                 if self.get_id() == self.id:
                                     print '%s connected to %s.' % (self.name, serialAddress)
@@ -114,7 +112,6 @@ class Instrument(object):
                     for serialAddress in SERIAL_ADDRESSES_WINDOWS:
                         if self.serialAddress is None:
                             try:
-                                print serialAddress
                                 self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
                                 if self.get_id() == self.id:
                                     print '%s connected to %s.' % (self.name, serialAddress)
