@@ -98,8 +98,8 @@ class Instrument(object):
                     for serialAddress in SERIAL_ADDRESSES_OSX:
                         if self.serialAddress is None:
                             try:
-                                self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
                                 print serialAddress
+                                self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
                                 if self.get_id() == self.id:
                                     print '%s connected to %s.' % (self.name, serialAddress)
                                     self.serialAddress = serialAddress
@@ -114,8 +114,8 @@ class Instrument(object):
                     for serialAddress in SERIAL_ADDRESSES_WINDOWS:
                         if self.serialAddress is None:
                             try:
-                                self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
                                 print serialAddress
+                                self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
                                 if self.get_id() == self.id:
                                     print '%s connected to %s.' % (self.name, serialAddress)
                                     self.serialAddress = serialAddress
