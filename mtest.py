@@ -15,7 +15,7 @@ INSTRUMENT_DIRECTORY = './instruments'
 SERIAL_BAUDRATE = 9600
 SERIAL_READ_SIZE = 256 
 SERIAL_ADDRESSES_OSX = glob.glob('/dev/tty.usbserial*')
-SERIAL_ADDRESS_WINDOWS = 'COM3'
+SERIAL_ADDRESSES_WINDOWS = ['COM' + str(i + 1) for i in range(256)]
 MAC_OSX_ALIAS = 'darwin'
 WINDOWS_ALIAS = 'win32'
 LINUX_ALIAS = 'linux'
@@ -24,9 +24,10 @@ LINUX2_ALIAS = 'linux2'
 #base class
 class Instrument(object):
 
-    def __init__(self, name, communicationProtocol='serial'):
+    def __init__(self, name, communicationProtocol='serial', serialAddress=None):
         self.name = name
         self.communicationProtocol = communicationProtocol
+        self.serialAddress = serialAddress
         instrumentFile = open(os.path.join(INSTRUMENT_DIRECTORY, name + '.json'))
         instrumentFileDict = json.load(instrumentFile)
         self.parametersDict = instrumentFileDict['parameters']
@@ -79,25 +80,53 @@ class Instrument(object):
 
 
     def connect(self):
-        #refresh SERIAL_ADDRESSES_OSX in case a serial controller was connected after mtest was imported. 
-        SERIAL_ADDRESSES_OSX = glob.glob('/dev/tty.usbserial*')
-        print SERIAL_ADDRESSES_OSX
         if self.communicationProtocol is 'serial':
-            # Set up serial port depending on operating system according to Prologix instructions
-            if platform == MAC_OSX_ALIAS: 
-                for serialAddress in SERIAL_ADDRESSES_OSX:
-                    try:
-                        print 'Connecting to %s...' % serialAddress
-                        self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-                        print 'Connected.'
-                    except:
-                        print 'Could not connect to %s.' %serialAddress
+            #refresh SERIAL_ADDRESSES_OSX in case a serial controller was connected after mtest was imported. 
+            SERIAL_ADDRESSES_OSX = glob.glob('/dev/tty.usbserial*')
+            if self.serialAddress is not None:
+                try:
+                    print 'Connecting to %s...' % self.serialAddress
+                    self.handle = serial.Serial(self.serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+                    print 'Connected.'
+                except:
+                    print 'Could not connect to %s.' %serialAddress
                 self.handle.read(SERIAL_READ_SIZE)
-            elif platform == WINDOWS_ALIAS:
-                self.handle = serial.Serial(SERIAL_ADDRESS_WINDOWS, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-            elif platform == LINUX_ALIAS or platform == LINUX2_ALIAS:
-                print 'This library has not been tested on Linux. Attempting to connect using OSX protocol: '
-                self.handle = serial.Serial(SERIAL_ADDRESS_OSX, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+            else:
+                # Set up serial port depending on operating system according to Prologix instructions
+                if platform == MAC_OSX_ALIAS: 
+                    for serialAddress in SERIAL_ADDRESSES_OSX:
+                        try:
+                            print 'Connecting to %s...' % serialAddress
+                            self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+                            print 'Connected.'
+                            self.serialAddress = serialAddress
+                            break
+                        except:
+                            print 'Could not connect to %s.' %serialAddress
+                    self.handle.read(SERIAL_READ_SIZE)
+                elif platform == WINDOWS_ALIAS:
+                    for serialAddress in SERIAL_ADDRESSES_WINDOWS:
+                        try:
+                            print 'Connecting to %s...' % serialAddress
+                            self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+                            print 'Connected.'
+                            self.serialAddress = serialAddress
+                            break
+                        except:
+                            print 'Could not connect to %s.' %serialAddress
+                    self.handle.read(SERIAL_READ_SIZE)
+                elif platform == LINUX_ALIAS or platform == LINUX2_ALIAS:
+                    print 'This library has not been tested on Linux. Attempting to connect using OSX protocol: '
+                    for serialAddress in SERIAL_ADDRESSES_OSX:
+                        try:
+                            print 'Connecting to %s...' % serialAddress
+                            self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+                            print 'Connected.'
+                            self.serialAddress = serialAddress
+                            break
+                        except:
+                            print 'Could not connect to %s.' %serialAddress
+                    self.handle.read(SERIAL_READ_SIZE)
 
             #set Prologix GPIB USB to controller mode
             self.handle.write('++mode 1\n')
