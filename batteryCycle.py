@@ -28,7 +28,6 @@ VOLTAGE_DIVIDER_RATIO = 0.5
 #note that this is an empirical approximation of the time it takes to set the current on the electronic load. 
 #This value is determined mostly by the timeout parameter set in AGILENT_6060B.py. 
 PROGRAMMING_DELAY = 0.2
-ELECTRONIC_LOAD_SERIAL_ADDRESS = 'ASRL3'
 
 def WriteRow(csvWriter, entryList):
 	csvWriter.writerow(entryList)
@@ -77,7 +76,7 @@ def main():
 
 	#configure electronic load
 	print 'Connecting to Agilent 6060B'
-	el = mtest.Agilent6060B('Agilent6060B', serialAddress=ELECTRONIC_LOAD_SERIAL_ADDRESS)
+	el = mtest.Agilent6060B('Agilent6060B')
 	el.set_input('ON')
 	el.set_mode('CURRENT')
 
