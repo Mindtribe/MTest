@@ -96,46 +96,50 @@ class Instrument(object):
                 # Set up serial port depending on operating system according to Prologix instructions
                 if platform == MAC_OSX_ALIAS: 
                     for serialAddress in SERIAL_ADDRESSES_OSX:
-                        try:
-                            self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-                            if self.get_id() == self.id:
-                                print '%s connected to %s.' % (self.name, serialAddress)
-                                self.serialAddress = serialAddress
-                                break
-                            else:
-                                #wrong instrument
-                                self.disconnect()
-                        except:
-                            pass
+                        if self.serialAddress is None:
+                            try:
+                                self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+                                print serialAddress
+                                if self.get_id() == self.id:
+                                    print '%s connected to %s.' % (self.name, serialAddress)
+                                    self.serialAddress = serialAddress
+                                    break
+                                else:
+                                    #wrong instrument
+                                    self.disconnect()
+                            except:
+                                pass
                     self.handle.read(SERIAL_READ_SIZE)
                 elif platform == WINDOWS_ALIAS:
                     for serialAddress in SERIAL_ADDRESSES_WINDOWS:
-                        try:
-                            self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-                            if self.get_id() == self.id:
-                                print '%s connected to %s.' % (self.name, serialAddress)
-                                self.serialAddress = serialAddress
-                                break
-                            else:
-                                #wrong instrument
-                                self.disconnect()
-                        except:
-                            pass
+                        if self.serialAddress is None:
+                            try:
+                                self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+                                if self.get_id() == self.id:
+                                    print '%s connected to %s.' % (self.name, serialAddress)
+                                    self.serialAddress = serialAddress
+                                    break
+                                else:
+                                    #wrong instrument
+                                    self.disconnect()
+                            except:
+                                pass
                     self.handle.read(SERIAL_READ_SIZE)
                 elif platform == LINUX_ALIAS or platform == LINUX2_ALIAS:
                     print 'This library has not been tested on Linux. Attempting to connect using OSX protocol: '
                     for serialAddress in SERIAL_ADDRESSES_OSX:
-                        try:
-                            self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-                            if self.get_id() == self.id:
-                                print '%s connected to %s.' % (self.name, serialAddress)
-                                self.serialAddress = serialAddress
-                                break
-                            else:
-                                #wrong instrument
-                                self.disconnect()
-                        except:
-                            pass
+                        if self.serialAddress is None:
+                            try:
+                                self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+                                if self.get_id() == self.id:
+                                    print '%s connected to %s.' % (self.name, serialAddress)
+                                    self.serialAddress = serialAddress
+                                    break
+                                else:
+                                    #wrong instrument
+                                    self.disconnect()
+                            except:
+                                pass
                     self.handle.read(SERIAL_READ_SIZE)
 
             #set Prologix GPIB USB to controller mode
