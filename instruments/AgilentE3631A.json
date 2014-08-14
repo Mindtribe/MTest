@@ -64,10 +64,10 @@
 											"arguments": "",
 											"description": "This query returns the presently programmed triggered current level. If no triggered level is programmed, the CURRent level is returned. CURRent :TRIGgered? MAXimum and CURRent:TRIGgered? MINimum return the maximum and minimum programmable triggered current levels."
 										},
-						"set_range": 	{ 
-											"commandString": "VOLTage:RANGe %s",
-											"arguments": "range {P6V|P25V|N25V}",
-											"description": "This command selects an output range to be programmed by the identifier. For example, when 8V/20A* range is selected, the maximum programmable voltage and current are limited to 8.24 volts and 20.60 amps. When 20V/10A* range is selected, the maximum programmable voltage and current are limited to 20.60 volts and 10.30 amps. See page 70 for more details of the programming ranges of the Agilent E3634A model. ‘‘P20V’’* or ‘‘HIGH’’ is the identifier for the 20V/10A* range and ‘‘P8V’’* or ‘‘LOW’’ is for the 8V/20A* range. At *RST, the 8V/20A* or 25V/7A** range is selected."
+						"select_output": 	{ 
+											"commandString": "INSTrument:SELect %s",
+											"arguments": "output {P6V|P25V|N25V}",
+											"description": "This command selects the output to be programmed among three outputs by the output identifier. The outputs of the power supply are considered three logical instruments. The INSTrument command provides a mechanism to identify and select an output. When one output is selected, the other outputs are unavailable for programming until selected. The commands which are affected by the INSTrument command are output setting commands (SOURce), measurement commands (MEASure), and calibration commands (CALibration). 'P6V' is the identifier for +6V output, 'P25V' is for +25V output and 'N25V' is for -25V output."
 										}
 					}
 }

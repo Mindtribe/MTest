@@ -203,9 +203,6 @@ class DCPowerSupply(Instrument):
     def get_programmed_current(self):
         return float(self.send_command('get_programmed_current'))
 
-    def set_range(self, range):
-        self.send_command('set_range', range)
-
 #electronic load class
 class ElectronicLoad(Instrument):
     def set_input(self, input):
@@ -264,6 +261,9 @@ class AgilentE3631A(DCPowerSupply):
     def set_voltage_and_current(self, range, voltage, current):
         self.send_command('set_voltage_and_current', range, voltage, current)
 
+    def select_output(self, output):
+        self.send_command('select_output', output)
+
 class AgilentE3633A(DCPowerSupply):
     def set_voltage_and_current(self, voltage, current):
         self.send_command('set_voltage_and_current', voltage, current)
@@ -273,6 +273,9 @@ class AgilentE3633A(DCPowerSupply):
 
     def set_current_limit(self, currentLimit):
         self.send_command('set_current_limit', currentLimit)
+
+    def set_range(self, range):
+        self.send_command('set_range', range)
 
 #electronic loads
 class Agilent6060B(ElectronicLoad):
