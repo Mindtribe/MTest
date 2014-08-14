@@ -115,6 +115,7 @@ class Instrument(object):
                         if self.serialAddress is None:
                             try:
                                 self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+                                print serialAddress
                                 if self.get_id() == self.id:
                                     print '%s connected to %s.' % (self.name, serialAddress)
                                     self.serialAddress = serialAddress
