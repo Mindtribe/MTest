@@ -1,5 +1,6 @@
 {	
 	"parameters":	{
+						"id": "HEWLETT-PACKARD,6060B,0,A.04.00\n",
 						"usbAddress": "None",
 						"ipAddress": "None",
 						"terminationCharacters": "\n",

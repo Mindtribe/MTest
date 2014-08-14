@@ -1,5 +1,6 @@
 {	
 	"parameters":	{
+						"id": "TEKTRONIX,MSO4104B-L,C025028,CF:91.1CT FV:v2.90 ",
 						"usbAddress": "USB0::0x0699::0x041C::C025028",
 						"ipAddress": "TCPIP::192.168.171.84",
 						"terminationCharacters": "\n",
