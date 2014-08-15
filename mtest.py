@@ -28,10 +28,11 @@ LINUX2_ALIAS = 'linux2'
 #base class
 class Instrument(object):
 
-    def __init__(self, name, communicationProtocol='serial', serialAddress=None):
+    def __init__(self, name, communicationProtocol='serial', serialAddress=None, usbAddress=None):
         self.name = name
         self.communicationProtocol = communicationProtocol
         self.serialAddress = serialAddress
+        self.usbAddress = usbAddress
         instrumentFile = open(os.path.join(INSTRUMENT_DIRECTORY, name + '.json'))
         instrumentFileDict = json.load(instrumentFile)
         self.parametersDict = instrumentFileDict['parameters']
@@ -93,7 +94,7 @@ class Instrument(object):
                     self.handle = serial.Serial(self.serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
                     print '%s connected to %s.' % (self.name, self.serialAddress)
                 except:
-                    print 'Could not connect to %s.' %serialAddress
+                    print 'Could not connect to %s.' % serialAddress
                 self.handle.read(SERIAL_READ_SIZE)
             else:
                 # Set up serial port depending on operating system according to Prologix instructions
@@ -161,19 +162,29 @@ class Instrument(object):
                 self.handle.term_chars = self.terminationCharacters
 
         elif self.communicationProtocol is 'usb':
-            for usbAddress in USB_ADDRESSES:
-                if self.usbAddress is None:
-                    try:
-                        self.handle = visa.instrument(usbAddress)
-                        if self.get_id() == self.id:
-                            print '%s connected to %s.' % (self.name, usbAddress)
-                            self.usbAddress = usbAddress
-                            break
-                        else:
-                            #wrong instrument
-                            self.disconnect()
-                    except:
-                        pass
+            #refresh USB_ADDRESSES in case a usb controller was connected after mtest was imported. 
+            USB_ADDRESSES = [address for address in rm.list_resources() if address.find('USB') >= 0]
+            print USB_ADDRESSES
+            if self.usbAddress is not None:
+                try:
+                    self.handle = visa.instrument(usbAddress)                    
+                    print '%s connected to %s.' % (self.name, self.usbAddress)
+                except:
+                    print 'Could not connect to %s.' % usbAddress
+            else:
+                for usbAddress in USB_ADDRESSES:
+                    if self.usbAddress is None:
+                        try:
+                            self.handle = visa.instrument(usbAddress)
+                            if self.get_id() == self.id:
+                                print '%s connected to %s.' % (self.name, usbAddress)
+                                self.usbAddress = usbAddress
+                                break
+                            else:
+                                #wrong instrument
+                                self.disconnect()
+                        except:
+                            pass
         #set termination characters so instrument knows when to stop listening and execute a command
         self.handle.term_chars = self.terminationCharacters
 
