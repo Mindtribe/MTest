@@ -10,7 +10,7 @@ import csv
 import shutil
 from BeautifulSoup import BeautifulSoup as soup
 
-#iniitalize resource manager to help find connected devices. This is required to properly initialize the USB_ADDRESSES global variable
+#iniitalize resource manager to help find connected devices. This is required to properly initialize the USB_ADDRESSES global variable.
 rm = visa.ResourceManager()
 
 #globals
