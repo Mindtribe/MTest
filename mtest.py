@@ -10,12 +10,16 @@ import csv
 import shutil
 from BeautifulSoup import BeautifulSoup as soup
 
+#iniitalize resource manager to help find connected devices. This is required to properly initialize the USB_ADDRESSES global variable
+rm = visa.ResourceManager()
+
 #globals
 INSTRUMENT_DIRECTORY = './instruments'
 SERIAL_BAUDRATE = 9600
 SERIAL_READ_SIZE = 256 
 SERIAL_ADDRESSES_OSX = glob.glob('/dev/tty.usbserial*')
 SERIAL_ADDRESSES_WINDOWS = ['COM' + str(i + 1) for i in range(256)]
+USB_ADDRESSES = [address for address in rm.list_resources() if address.find('USB') >= 0]
 MAC_OSX_ALIAS = 'darwin'
 WINDOWS_ALIAS = 'win32'
 LINUX_ALIAS = 'linux'
@@ -157,13 +161,21 @@ class Instrument(object):
                 self.handle.term_chars = self.terminationCharacters
 
         elif self.communicationProtocol is 'usb':
-            #check if device can connect via usb
-            if self.usbAddress is None:
-                print 'Error. This instrument has not been configured to connect via usb. Please specify the instrument\'s usb address in its corresponding JSON file.'
-            else:
-                self.handle = visa.instrument(self.usbAddress)
-                #set termination characters so instrument knows when to stop listening and execute a command
-                self.handle.term_chars = self.terminationCharacters
+            for usbAddress in USB_ADDRESSES:
+                if self.usbAddress is None:
+                    try:
+                        self.handle = visa.instrument(usbAddress)
+                        if self.get_id() == self.id:
+                            print '%s connected to %s.' % (self.name, usbAddress)
+                            self.usbAddress = usbAddress
+                            break
+                        else:
+                            #wrong instrument
+                            self.disconnect()
+                    except:
+                        pass
+        #set termination characters so instrument knows when to stop listening and execute a command
+        self.handle.term_chars = self.terminationCharacters
 
     def disconnect(self):
         if self.communicationProtocol is 'serial':
