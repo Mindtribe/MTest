@@ -38,10 +38,6 @@ class Instrument(object):
         self.parametersDict = instrumentFileDict['parameters']
         self.id = str(self.parametersDict['id'])
         self.terminationCharacters = str(self.parametersDict['terminationCharacters'])
-        if self.parametersDict['usbAddress'] == 'None':
-            self.usbAddress = None
-        else:
-            self.usbAddress = self.parametersDict['usbAddress']
         if self.parametersDict['ipAddress'] == 'None':
             self.ipAddress = None
         else:
@@ -170,7 +166,7 @@ class Instrument(object):
                     self.handle = visa.instrument(usbAddress)                    
                     print '%s connected to %s.' % (self.name, self.usbAddress)
                 except:
-                    print 'Could not connect to %s.' % usbAddress
+                    print 'Could not connect to %s.' % self.usbAddress
             else:
                 for usbAddress in USB_ADDRESSES:
                     if self.usbAddress is None:
