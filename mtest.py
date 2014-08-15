@@ -88,10 +88,14 @@ class Instrument(object):
             if self.serialAddress is not None:
                 try:
                     self.handle = serial.Serial(self.serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-                    print '%s connected to %s.' % (self.name, self.serialAddress)
+                    if self.get_id() == self.id:
+                        print '%s connected to %s.' % (self.name, self.serialAddress)
+                    else:
+                        #wrong instrument
+                        raise Exception('The instrument you are attempting to connect to does not match its corresponding object class')
+                        self.disconnect()
                 except:
                     print 'Could not connect to %s.' % serialAddress
-                self.handle.read(SERIAL_READ_SIZE)
             else:
                 # Set up serial port depending on operating system according to Prologix instructions
                 if platform == MAC_OSX_ALIAS: 
@@ -108,7 +112,6 @@ class Instrument(object):
                                     self.disconnect()
                             except:
                                 pass
-                    self.handle.read(SERIAL_READ_SIZE)
                 elif platform == WINDOWS_ALIAS:
                     for serialAddress in SERIAL_ADDRESSES_WINDOWS:
                         if self.serialAddress is None:
@@ -123,7 +126,6 @@ class Instrument(object):
                                     self.disconnect()
                             except:
                                 pass
-                    self.handle.read(SERIAL_READ_SIZE)
                 elif platform == LINUX_ALIAS or platform == LINUX2_ALIAS:
                     print 'This library has not been tested on Linux. Attempting to connect using OSX protocol: '
                     for serialAddress in SERIAL_ADDRESSES_OSX:
@@ -139,7 +141,6 @@ class Instrument(object):
                                     self.disconnect()
                             except:
                                 pass
-                    self.handle.read(SERIAL_READ_SIZE)
 
             #set Prologix GPIB USB to controller mode
             self.handle.write('++mode 1\n')
@@ -153,9 +154,18 @@ class Instrument(object):
             if self.ipAddress is None:
                 print 'Error. This instrument has not been configured to connect via ethernet. Please specify the instrument\'s IP address in its corresponding JSON file.'
             else:
-                self.handle = visa.instrument(self.ipAddress)
-                #set termination characters so instrument knows when to stop listening and execute a command
-                self.handle.term_chars = self.terminationCharacters
+                try:
+                    self.handle = visa.instrument(self.ipAddress)
+                    if self.get_id() == self.id:
+                        print '%s connected to %s.' % (self.name, self.ipAddress)
+                        #set termination characters so instrument knows when to stop listening and execute a command
+                        self.handle.term_chars = self.terminationCharacters
+                    else:
+                        #wrong instrument
+                        raise Exception('The instrument you are attempting to connect to does not match its corresponding object class')
+                        self.disconnect()
+                except:
+                    print 'Could not connect to %s.' % ipAddress
 
         elif self.communicationProtocol is 'usb':
             #refresh USB_ADDRESSES in case a usb controller was connected after mtest was imported. 
@@ -163,8 +173,12 @@ class Instrument(object):
             print USB_ADDRESSES
             if self.usbAddress is not None:
                 try:
-                    self.handle = visa.instrument(usbAddress)                    
-                    print '%s connected to %s.' % (self.name, self.usbAddress)
+                    self.handle = visa.instrument(self.usbAddress)
+                    if self.get_id() == self.id:
+                        print '%s connected to %s.' % (self.name, self.usbAddress)
+                    else:
+                        #wrong instrument
+                        self.disconnect()                    
                 except:
                     print 'Could not connect to %s.' % self.usbAddress
             else:
