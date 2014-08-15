@@ -1,6 +1,6 @@
 {	
 	"parameters":	{
-						"id": "HEWLETT-PACKARD,6060B,0,A.04.00\n",
+						"id": "HEWLETT-PACKARD,6060B,0,A.04.00",
 						"ipAddress": "None",
 						"terminationCharacters": "\n",
 						"serialTimeout": "0.2"

@@ -15,24 +15,27 @@ rm = visa.ResourceManager()
 
 #globals
 INSTRUMENT_DIRECTORY = './instruments'
-SERIAL_BAUDRATE = 9600
-SERIAL_READ_SIZE = 256 
-SERIAL_ADDRESSES_OSX = glob.glob('/dev/tty.usbserial*')
-SERIAL_ADDRESSES_WINDOWS = ['COM' + str(i + 1) for i in range(256)]
-USB_ADDRESSES = [address for address in rm.list_resources() if address.find('USB') >= 0]
+INSTRUMENT_ADDRESSES = [address for address in rm.list_resources()]
 MAC_OSX_ALIAS = 'darwin'
 WINDOWS_ALIAS = 'win32'
 LINUX_ALIAS = 'linux'
 LINUX2_ALIAS = 'linux2'
 
+#remove busy addresses
+for instrumentAddress in INSTRUMENT_ADDRESSES:
+    try:
+        temporaryHandle = visa.instrument(instrumentAddress)
+    except:
+        INSTRUMENT_ADDRESSES.remove(instrumentAddress)
+        pass
+
 #base class
 class Instrument(object):
 
-    def __init__(self, name, communicationProtocol='serial', serialAddress=None, usbAddress=None):
+    def __init__(self, name, communicationProtocol='serial', instrumentAddress=None):
         self.name = name
         self.communicationProtocol = communicationProtocol
-        self.serialAddress = serialAddress
-        self.usbAddress = usbAddress
+        self.instrumentAddress = instrumentAddress
         instrumentFile = open(os.path.join(INSTRUMENT_DIRECTORY, name + '.json'))
         instrumentFileDict = json.load(instrumentFile)
         self.parametersDict = instrumentFileDict['parameters']
@@ -72,9 +75,10 @@ class Instrument(object):
             #note that we typecast all parameters as strings here
             parametersTuple += (str(parameter),)
         if self.communicationProtocol is 'serial':
-            #note that pyserial no longer allows you to specify termination characters explicitly, so instead, we append them to the end of each command.
-            self.handle.write((self.get_command_string(commandName) % parametersTuple) + self.terminationCharacters)
-            return self.handle.read(SERIAL_READ_SIZE)
+            # #note that pyserial no longer allows you to specify termination characters explicitly, so instead, we append them to the end of each command.
+            # self.handle.write((self.get_command_string(commandName) % parametersTuple) + self.terminationCharacters)
+            # return self.handle.read(SERIAL_READ_SIZE)
+            return self.handle.ask(self.get_command_string(commandName) % parametersTuple)
         elif self.communicationProtocol is 'ethernet':
             return self.handle.ask(self.get_command_string(commandName) % parametersTuple)
         elif self.communicationProtocol is 'usb':
@@ -82,72 +86,107 @@ class Instrument(object):
 
 
     def connect(self):
-        if self.communicationProtocol is 'serial':
-            #refresh SERIAL_ADDRESSES_OSX in case a serial controller was connected after mtest was imported. 
-            SERIAL_ADDRESSES_OSX = glob.glob('/dev/tty.usbserial*')
-            if self.serialAddress is not None:
+        # if self.communicationProtocol is 'serial':
+        #     #refresh SERIAL_ADDRESSES_OSX in case a serial controller was connected after mtest was imported. 
+        #     SERIAL_ADDRESSES_OSX = glob.glob('/dev/tty.usbserial*')
+        #     if self.serialAddress is not None:
+        #         try:
+        #             self.handle = serial.Serial(self.serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+        #             if self.get_id() == self.id:
+        #                 print '%s connected to %s.' % (self.name, self.serialAddress)
+        #             else:
+        #                 #wrong instrument
+        #                 raise Exception('The instrument you are attempting to connect to does not match its corresponding object class')
+        #                 self.disconnect()
+        #         except:
+        #             print 'Could not connect to %s.' % serialAddress
+        #     else:
+        #         # Set up serial port depending on operating system according to Prologix instructions
+        #         if platform == MAC_OSX_ALIAS: 
+        #             for serialAddress in SERIAL_ADDRESSES_OSX:
+        #                 if self.serialAddress is None:
+        #                     try:
+        #                         self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+        #                         if self.get_id() == self.id:
+        #                             print '%s connected to %s.' % (self.name, serialAddress)
+        #                             self.serialAddress = serialAddress
+        #                             break
+        #                         else:
+        #                             #wrong instrument
+        #                             self.disconnect()
+        #                     except:
+        #                         pass
+        #         elif platform == WINDOWS_ALIAS:
+        #             for serialAddress in SERIAL_ADDRESSES_WINDOWS:
+        #                 if self.serialAddress is None:
+        #                     try:
+        #                         self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+        #                         if self.get_id() == self.id:
+        #                             print '%s connected to %s.' % (self.name, serialAddress)
+        #                             self.serialAddress = serialAddress
+        #                             break
+        #                         else:
+        #                             #wrong instrument
+        #                             self.disconnect()
+        #                     except:
+        #                         pass
+        #         elif platform == LINUX_ALIAS or platform == LINUX2_ALIAS:
+        #             print 'This library has not been tested on Linux. Attempting to connect using OSX protocol: '
+        #             for serialAddress in SERIAL_ADDRESSES_OSX:
+        #                 if self.serialAddress is None:
+        #                     try:
+        #                         self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+        #                         if self.get_id() == self.id:
+        #                             print '%s connected to %s.' % (self.name, serialAddress)
+        #                             self.serialAddress = serialAddress
+        #                             break
+        #                         else:
+        #                             #wrong instrument
+        #                             self.disconnect()
+        #                     except:
+        #                         pass
+
+        #     #set Prologix GPIB USB to controller mode
+        #     self.handle.write('++mode 1\n')
+        #     self.handle.read(SERIAL_READ_SIZE)
+        #     #set GPIB address. Most instruments have default GPIB addresses of 5. Since we are actually making a serial connection, I think this is unncessary. Should possibly remove this later. 
+        #     self.handle.write('++addr 5\n')
+        #     self.handle.read(SERIAL_READ_SIZE)
+
+        if (self.communicationProtocol is 'serial') or (self.communicationProtocol is 'usb'):
+            if self.instrumentAddress is not None:
                 try:
-                    self.handle = serial.Serial(self.serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
+                    self.handle = visa.instrument(self.instrumentAddress)
+                    #set termination characters so instrument knows when to stop listening and execute a command
+                    self.handle.term_chars = self.terminationCharacters
                     if self.get_id() == self.id:
-                        print '%s connected to %s.' % (self.name, self.serialAddress)
+                        print '%s connected to %s.' % (self.name, self.instrumentAddress)
                     else:
                         #wrong instrument
-                        raise Exception('The instrument you are attempting to connect to does not match its corresponding object class')
-                        self.disconnect()
+                        self.disconnect()                    
                 except:
-                    print 'Could not connect to %s.' % serialAddress
+                    print 'Could not connect to %s.' % self.instrumentAddress
             else:
-                # Set up serial port depending on operating system according to Prologix instructions
-                if platform == MAC_OSX_ALIAS: 
-                    for serialAddress in SERIAL_ADDRESSES_OSX:
-                        if self.serialAddress is None:
-                            try:
-                                self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-                                if self.get_id() == self.id:
-                                    print '%s connected to %s.' % (self.name, serialAddress)
-                                    self.serialAddress = serialAddress
-                                    break
-                                else:
-                                    #wrong instrument
-                                    self.disconnect()
-                            except:
-                                pass
-                elif platform == WINDOWS_ALIAS:
-                    for serialAddress in SERIAL_ADDRESSES_WINDOWS:
-                        if self.serialAddress is None:
-                            try:
-                                self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-                                if self.get_id() == self.id:
-                                    print '%s connected to %s.' % (self.name, serialAddress)
-                                    self.serialAddress = serialAddress
-                                    break
-                                else:
-                                    #wrong instrument
-                                    self.disconnect()
-                            except:
-                                pass
-                elif platform == LINUX_ALIAS or platform == LINUX2_ALIAS:
-                    print 'This library has not been tested on Linux. Attempting to connect using OSX protocol: '
-                    for serialAddress in SERIAL_ADDRESSES_OSX:
-                        if self.serialAddress is None:
-                            try:
-                                self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-                                if self.get_id() == self.id:
-                                    print '%s connected to %s.' % (self.name, serialAddress)
-                                    self.serialAddress = serialAddress
-                                    break
-                                else:
-                                    #wrong instrument
-                                    self.disconnect()
-                            except:
-                                pass
-
-            #set Prologix GPIB USB to controller mode
-            self.handle.write('++mode 1\n')
-            self.handle.read(SERIAL_READ_SIZE)
-            #set GPIB address. Most instruments have default GPIB addresses of 5. Since we are actually making a serial connection, I think this is unncessary. Should possibly remove this later. 
-            self.handle.write('++addr 5\n')
-            self.handle.read(SERIAL_READ_SIZE)
+                for instrumentAddress in INSTRUMENT_ADDRESSES:
+                    if self.instrumentAddress is None:
+                        try:
+                            self.handle = visa.instrument(instrumentAddress)
+                            #set termination characters so instrument knows when to stop listening and execute a command
+                            self.handle.term_chars = self.terminationCharacters
+                            # try: 
+                            #     instrumentId = self.get_id()
+                            # except:
+                            #     instrumentId = None
+                            #     pass
+                            if self.get_id() == self.id:
+                                print '%s connected to %s.' % (self.name, instrumentAddress)
+                                self.instrumentAddress = instrumentAddress
+                                break
+                            else:
+                                #wrong instrument
+                                self.disconnect()
+                        except:
+                            pass
 
         elif self.communicationProtocol is 'ethernet':
             #check if device can connect via ethernet
@@ -166,37 +205,6 @@ class Instrument(object):
                         self.disconnect()
                 except:
                     print 'Could not connect to %s.' % ipAddress
-
-        elif self.communicationProtocol is 'usb':
-            #refresh USB_ADDRESSES in case a usb controller was connected after mtest was imported. 
-            USB_ADDRESSES = [address for address in rm.list_resources() if address.find('USB') >= 0]
-            print USB_ADDRESSES
-            if self.usbAddress is not None:
-                try:
-                    self.handle = visa.instrument(self.usbAddress)
-                    if self.get_id() == self.id:
-                        print '%s connected to %s.' % (self.name, self.usbAddress)
-                    else:
-                        #wrong instrument
-                        self.disconnect()                    
-                except:
-                    print 'Could not connect to %s.' % self.usbAddress
-            else:
-                for usbAddress in USB_ADDRESSES:
-                    if self.usbAddress is None:
-                        try:
-                            self.handle = visa.instrument(usbAddress)
-                            if self.get_id() == self.id:
-                                print '%s connected to %s.' % (self.name, usbAddress)
-                                self.usbAddress = usbAddress
-                                break
-                            else:
-                                #wrong instrument
-                                self.disconnect()
-                        except:
-                            pass
-        #set termination characters so instrument knows when to stop listening and execute a command
-        self.handle.term_chars = self.terminationCharacters
 
     def disconnect(self):
         if self.communicationProtocol is 'serial':
