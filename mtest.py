@@ -286,6 +286,8 @@ class Agilent6060B(ElectronicLoad):
 
 #oscilloscopes
 class TektronixMSO4104BL(Oscilloscope):
+    """Saves all 4 channels to a csv file and saves a screenshot as a png image."""
+
     def get_screen_capture(self):
         if (self.communicationProtocol is 'usb') or (self.communicationProtocol is 'serial'):
             #globals

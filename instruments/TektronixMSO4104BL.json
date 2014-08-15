@@ -16,6 +16,11 @@
 											"commandString": "*RST",
 											"arguments": "",
 											"description": "This command sets the oscilloscope to its factory-defined state."
-										}													
+										},			
+						"get_screen_capture": 		{ 
+											"commandString": "",
+											"arguments": "",
+											"description": "This command saves all 4 channels to a csv file and saves a screenshot as a png image."
+										}											
 					}
 }
