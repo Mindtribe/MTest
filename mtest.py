@@ -1,7 +1,6 @@
 import json
 import os
 import glob
-import serial
 import visa
 from sys import platform
 import mechanize
