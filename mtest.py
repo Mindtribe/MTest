@@ -21,6 +21,7 @@ WINDOWS_ALIAS = 'win32'
 LINUX_ALIAS = 'linux'
 LINUX2_ALIAS = 'linux2'
 
+print '\nFinding instrument addresses\n(This process may throw AttributeError Exceptions, which can be ignored)\n'
 #remove busy addresses
 for instrumentAddress in INSTRUMENT_ADDRESSES:
     try:
@@ -75,6 +76,7 @@ class Instrument(object):
             #note that we typecast all parameters as strings here
             parametersTuple += (str(parameter),)
         result = self.handle.ask(self.get_command_string(commandName) % parametersTuple)
+        #wait for instrument to process command
         time.sleep(self.timeout)
         return result
 
@@ -85,31 +87,34 @@ class Instrument(object):
             #note that we typecast all parameters as strings here
             parametersTuple += (str(parameter),)
         self.handle.write(self.get_command_string(commandName) % parametersTuple)
+        #wait for instrument to process command
         time.sleep(self.timeout)
 
     def connect(self):
         if (self.communicationProtocol is 'serial') or (self.communicationProtocol is 'usb'):
             if self.instrumentAddress is not None:
+                #if user specified instrument address, try connecting to it
                 try:
                     self.handle = visa.instrument(self.instrumentAddress)
                     #set termination characters so instrument knows when to stop listening and execute a command
                     self.handle.term_chars = self.terminationCharacters
-                    self.handle.timeout = self.timeout
                     if self.get_id() == self.id:
                         print '%s connected to %s.' % (self.name, self.instrumentAddress)
                     else:
                         #wrong instrument
+                        raise Exception('The instrument you are attempting to connect to does not match its corresponding object class')
                         self.disconnect()                    
                 except:
                     print 'Could not connect to %s.' % self.instrumentAddress
+
             else:
+                #if user did not specify instrument address, try connecting to all available addresses
                 for instrumentAddress in INSTRUMENT_ADDRESSES:
                     if self.instrumentAddress is None:
                         try:
                             self.handle = visa.instrument(instrumentAddress)
                             #set termination characters so instrument knows when to stop listening and execute a command
                             self.handle.term_chars = self.terminationCharacters
-                            self.handle.timeout = self.timeout
                             if self.get_id() == self.id:
                                 print '%s connected to %s.' % (self.name, instrumentAddress)
                                 self.instrumentAddress = instrumentAddress
@@ -127,10 +132,10 @@ class Instrument(object):
             else:
                 try:
                     self.handle = visa.instrument(self.ipAddress)
+                    #set termination characters so instrument knows when to stop listening and execute a command
+                    self.handle.term_chars = self.terminationCharacters
                     if self.get_id() == self.id:
                         print '%s connected to %s.' % (self.name, self.ipAddress)
-                        #set termination characters so instrument knows when to stop listening and execute a command
-                        self.handle.term_chars = self.terminationCharacters
                     else:
                         #wrong instrument
                         raise Exception('The instrument you are attempting to connect to does not match its corresponding object class')
@@ -139,12 +144,7 @@ class Instrument(object):
                     print 'Could not connect to %s.' % ipAddress
 
     def disconnect(self):
-        if self.communicationProtocol is 'serial':
-            self.handle.close()
-        elif self.communicationProtocol is 'ethernet':
-            self.handle.close()
-        elif self.communicationProtocol is 'usb':
-            self.handle.close()
+        self.handle.close()
 
     def get_id(self):
         return self.send_read_command('get_id')
@@ -254,6 +254,15 @@ class AgilentE3633A(DCPowerSupply):
 
 #electronic loads
 class Agilent6060B(ElectronicLoad):
+    def set_transient_voltage(self, voltage):
+        self.send_write_command('set_transient_voltage', voltage)
+
+    def set_transient_current(self, current):
+        self.send_write_command('set_transient_current', current)
+
+    def set_transient_resistance(self, resistance):
+        self.send_write_command('set_transient_resistance', resistance)   
+
     def get_error(self):
         return self.send_read_command('get_error')
 
