@@ -24,6 +24,9 @@ print '\n----------\n'
 try:
 	print 'Connecting via USB:'
 	osc = mtest.TektronixMSO4104BL('TektronixMSO4104BL', 'usb')
+
+	print '\n----------\n'
+
 	try:
 		print 'Testing all commands:\n'
 		osc.get_id()
