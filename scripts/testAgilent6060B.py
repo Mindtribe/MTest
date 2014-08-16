@@ -19,31 +19,31 @@ except:
 
 print '\n----------\n'
 
-# try:
-# 	print 'Testing all commands:\n'
-# 	el.get_id()
-# 	el.reset()
-# 	el.set_input('ON')
-# 	el.set_voltage(VOLTAGE)
-# 	el.set_current(CURRENT)
-# 	el.set_resistance(RESISTANCE)
-# 	el.set_transient_voltage(VOLTAGE)
-# 	el.set_transient_current(CURRENT)
-# 	el.set_transient_resistance(RESISTANCE)
-# 	el.set_range_resistance(RESISTANCE)
-# 	el.set_range_current(CURRENT)
-# 	el.set_slew_voltage(VOLTAGE_SLEW)
-# 	el.set_slew_current(CURRENT_SLEW)
-# 	el.set_mode('CURRent')
-# 	el.get_programmed_voltage()
-# 	el.get_programmed_current()
-# 	el.get_programmed_resistance()
-# 	el.get_voltage()
-# 	el.get_current()
-# 	el.get_power()
-# 	el.get_error()
-# except:
-# 	print 'Error: Could not successfully send all commands. Try increasing serialTimeout parameter in AgilentE3631A.json.'
+try:
+	print 'Testing all commands:\n'
+	el.get_id()
+	el.reset()
+	el.set_input('ON')
+	el.set_voltage(VOLTAGE)
+	el.set_current(CURRENT)
+	el.set_resistance(RESISTANCE)
+	el.set_transient_voltage(VOLTAGE)
+	el.set_transient_current(CURRENT)
+	el.set_transient_resistance(RESISTANCE)
+	el.set_range_resistance(RESISTANCE)
+	el.set_range_current(CURRENT)
+	el.set_slew_voltage(VOLTAGE_SLEW)
+	el.set_slew_current(CURRENT_SLEW)
+	el.set_mode('CURRent')
+	el.get_programmed_voltage()
+	el.get_programmed_current()
+	el.get_programmed_resistance()
+	el.get_voltage()
+	el.get_current()
+	el.get_power()
+	el.get_error()
+except:
+	print 'Error: Could not successfully send all commands. Try increasing serialTimeout parameter in AgilentE3631A.json.'
 
 print '\n----------\n'
 
