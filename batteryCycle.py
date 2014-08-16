@@ -116,10 +116,13 @@ def main():
 			ApplyCurrentProfile(el, lj, CURRENT_PROFILE, startTime, writer, dischargeCycle)
 			print 'Recover voltage: %f' % ReadVoltage(lj)
 			print '____________________________'
+		print 'turning current off'
 		el.set_current(0)
 		el.set_input('OFF')
+		print 'current should be turned off'
 		WriteRow(summaryWriter, [chargeCycle, dischargeCycle])
 		while ReadVoltage(lj) < CHARGED_BATTERY_VOLTAGE:
+				el.set_input('OFF')
 				ConnectCharger(lj)
 				WriteRow(writer, [time.time()-startTime, ReadVoltage(lj), None, 'charge', None])
 				print ReadVoltage(lj)

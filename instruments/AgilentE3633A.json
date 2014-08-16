@@ -3,7 +3,7 @@
 						"id": "HEWLETT-PACKARD,E3633A,0,2.1-6.1-2.1",
 						"ipAddress": "None",
 						"terminationCharacters": "\n",
-						"serialTimeout": "0.3"
+						"timeout": "0.3"
 					},
 	"commands": 	{
 						"get_id": 		{ 

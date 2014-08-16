@@ -45,10 +45,10 @@ class Instrument(object):
             self.ipAddress = None
         else:
             self.ipAddress = self.parametersDict['ipAddress']
-        if self.parametersDict['serialTimeout'] == 'None':
-            self.serialTimeout = None
+        if self.parametersDict['timeout'] == 'None':
+            self.timeout = 0
         else:
-            self.serialTimeout = float(self.parametersDict['serialTimeout'])
+            self.timeout = float(self.parametersDict['timeout'])
         self.commandDict = instrumentFileDict['commands']
         self.connect()
 
@@ -68,97 +68,33 @@ class Instrument(object):
     def get_command_string(self, commandName):
         return str(self.commandDict[commandName]['commandString'])
 
-    def send_command(self, commandName, *parameters):
+    def send_read_command(self, commandName, *parameters):
         #form parameter tuple
         parametersTuple = ()
         for parameter in parameters:
             #note that we typecast all parameters as strings here
             parametersTuple += (str(parameter),)
-        if self.communicationProtocol is 'serial':
-            # #note that pyserial no longer allows you to specify termination characters explicitly, so instead, we append them to the end of each command.
-            # self.handle.write((self.get_command_string(commandName) % parametersTuple) + self.terminationCharacters)
-            # return self.handle.read(SERIAL_READ_SIZE)
-            return self.handle.ask(self.get_command_string(commandName) % parametersTuple)
-        elif self.communicationProtocol is 'ethernet':
-            return self.handle.ask(self.get_command_string(commandName) % parametersTuple)
-        elif self.communicationProtocol is 'usb':
-            return self.handle.ask(self.get_command_string(commandName) % parametersTuple)
+        result = self.handle.ask(self.get_command_string(commandName) % parametersTuple)
+        time.sleep(self.timeout)
+        return result
 
+    def send_write_command(self, commandName, *parameters):
+        #form parameter tuple
+        parametersTuple = ()
+        for parameter in parameters:
+            #note that we typecast all parameters as strings here
+            parametersTuple += (str(parameter),)
+        self.handle.write(self.get_command_string(commandName) % parametersTuple)
+        time.sleep(self.timeout)
 
     def connect(self):
-        # if self.communicationProtocol is 'serial':
-        #     #refresh SERIAL_ADDRESSES_OSX in case a serial controller was connected after mtest was imported. 
-        #     SERIAL_ADDRESSES_OSX = glob.glob('/dev/tty.usbserial*')
-        #     if self.serialAddress is not None:
-        #         try:
-        #             self.handle = serial.Serial(self.serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-        #             if self.get_id() == self.id:
-        #                 print '%s connected to %s.' % (self.name, self.serialAddress)
-        #             else:
-        #                 #wrong instrument
-        #                 raise Exception('The instrument you are attempting to connect to does not match its corresponding object class')
-        #                 self.disconnect()
-        #         except:
-        #             print 'Could not connect to %s.' % serialAddress
-        #     else:
-        #         # Set up serial port depending on operating system according to Prologix instructions
-        #         if platform == MAC_OSX_ALIAS: 
-        #             for serialAddress in SERIAL_ADDRESSES_OSX:
-        #                 if self.serialAddress is None:
-        #                     try:
-        #                         self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-        #                         if self.get_id() == self.id:
-        #                             print '%s connected to %s.' % (self.name, serialAddress)
-        #                             self.serialAddress = serialAddress
-        #                             break
-        #                         else:
-        #                             #wrong instrument
-        #                             self.disconnect()
-        #                     except:
-        #                         pass
-        #         elif platform == WINDOWS_ALIAS:
-        #             for serialAddress in SERIAL_ADDRESSES_WINDOWS:
-        #                 if self.serialAddress is None:
-        #                     try:
-        #                         self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-        #                         if self.get_id() == self.id:
-        #                             print '%s connected to %s.' % (self.name, serialAddress)
-        #                             self.serialAddress = serialAddress
-        #                             break
-        #                         else:
-        #                             #wrong instrument
-        #                             self.disconnect()
-        #                     except:
-        #                         pass
-        #         elif platform == LINUX_ALIAS or platform == LINUX2_ALIAS:
-        #             print 'This library has not been tested on Linux. Attempting to connect using OSX protocol: '
-        #             for serialAddress in SERIAL_ADDRESSES_OSX:
-        #                 if self.serialAddress is None:
-        #                     try:
-        #                         self.handle = serial.Serial(serialAddress, baudrate=SERIAL_BAUDRATE, timeout=self.serialTimeout)
-        #                         if self.get_id() == self.id:
-        #                             print '%s connected to %s.' % (self.name, serialAddress)
-        #                             self.serialAddress = serialAddress
-        #                             break
-        #                         else:
-        #                             #wrong instrument
-        #                             self.disconnect()
-        #                     except:
-        #                         pass
-
-        #     #set Prologix GPIB USB to controller mode
-        #     self.handle.write('++mode 1\n')
-        #     self.handle.read(SERIAL_READ_SIZE)
-        #     #set GPIB address. Most instruments have default GPIB addresses of 5. Since we are actually making a serial connection, I think this is unncessary. Should possibly remove this later. 
-        #     self.handle.write('++addr 5\n')
-        #     self.handle.read(SERIAL_READ_SIZE)
-
         if (self.communicationProtocol is 'serial') or (self.communicationProtocol is 'usb'):
             if self.instrumentAddress is not None:
                 try:
                     self.handle = visa.instrument(self.instrumentAddress)
                     #set termination characters so instrument knows when to stop listening and execute a command
                     self.handle.term_chars = self.terminationCharacters
+                    self.handle.timeout = self.timeout
                     if self.get_id() == self.id:
                         print '%s connected to %s.' % (self.name, self.instrumentAddress)
                     else:
@@ -173,11 +109,7 @@ class Instrument(object):
                             self.handle = visa.instrument(instrumentAddress)
                             #set termination characters so instrument knows when to stop listening and execute a command
                             self.handle.term_chars = self.terminationCharacters
-                            # try: 
-                            #     instrumentId = self.get_id()
-                            # except:
-                            #     instrumentId = None
-                            #     pass
+                            self.handle.timeout = self.timeout
                             if self.get_id() == self.id:
                                 print '%s connected to %s.' % (self.name, instrumentAddress)
                                 self.instrumentAddress = instrumentAddress
@@ -215,115 +147,115 @@ class Instrument(object):
             self.handle.close()
 
     def get_id(self):
-        return self.send_command('get_id')
+        return self.send_read_command('get_id')
 
     def reset(self):
-        return self.send_command('reset')
+        self.send_write_command('reset')
 
 #dc power supply class
 class DCPowerSupply(Instrument):
-    def get_version(self):
-        return self.send_command('get_version')
-
     def set_output(self, output):
-        self.send_command('set_output', output)
+        self.send_write_command('set_output', output)
 
     def set_voltage(self, voltage):
-        self.send_command('set_voltage', voltage)
+        self.send_write_command('set_voltage', voltage)
 
     def set_current(self, current):
-        self.send_command('set_current', current)
+        self.send_write_command('set_current', current)
+
+    def get_version(self):
+        return self.send_read_command('get_version')
 
     def get_voltage(self):
-        return float(self.send_command('get_voltage'))
+        return float(self.send_read_command('get_voltage'))
 
     def get_current(self):
-        return float(self.send_command('get_current'))
+        return float(self.send_read_command('get_current'))
 
     def get_programmed_voltage(self):
-        return float(self.send_command('get_programmed_voltage'))
+        return float(self.send_read_command('get_programmed_voltage'))
 
     def get_programmed_current(self):
-        return float(self.send_command('get_programmed_current'))
+        return float(self.send_read_command('get_programmed_current'))
 
 #electronic load class
 class ElectronicLoad(Instrument):
     def set_input(self, input):
-        self.send_command('set_input', input)
+        self.send_write_command('set_input', input)
 
     def set_voltage(self, voltage):
-        self.send_command('set_voltage', voltage)
+        self.send_write_command('set_voltage', voltage)
 
     def set_current(self, current):
-        self.send_command('set_current', current)
+        self.send_write_command('set_current', current)
 
     def set_resistance(self, resistance):
-        self.send_command('set_resistance', resistance)
+        self.send_write_command('set_resistance', resistance)
 
     def set_range_current(self, range):
-        self.send_command('set_range_current', range)
+        self.send_write_command('set_range_current', range)
 
     def set_range_resistance(self, range):
-        self.send_command('set_range_resistance', range)
+        self.send_write_command('set_range_resistance', range)
 
     def set_slew_voltage(self, slew):
-        self.send_command('set_slew_voltage', slew)
+        self.send_write_command('set_slew_voltage', slew)
 
     def set_slew_current(self, slew):
-        self.send_command('set_slew_current', slew)
+        self.send_write_command('set_slew_current', slew)
 
     def set_mode(self, mode):
-        self.send_command('set_mode', mode)
+        self.send_write_command('set_mode', mode)
 
     def get_programmed_voltage(self):
-        return float(self.send_command('get_programmed_voltage'))
+        return float(self.send_read_command('get_programmed_voltage'))
 
     def get_programmed_current(self):
-        return float(self.send_command('get_programmed_current'))
+        return float(self.send_read_command('get_programmed_current'))
 
     def get_programmed_resistance(self):
-        return float(self.send_command('get_programmed_resistance'))
+        return float(self.send_read_command('get_programmed_resistance'))
 
     def get_voltage(self):
-        return float(self.send_command('get_voltage'))
+        return float(self.send_read_command('get_voltage'))
 
     def get_current(self):
-        return float(self.send_command('get_current'))
+        return float(self.send_read_command('get_current'))
 
     def get_power(self):
-        return float(self.send_command('get_power'))
+        return float(self.send_read_command('get_power'))
 
 #oscilloscope class
 class Oscilloscope(Instrument):
     def get_screen_capture(self):
-        self.send_command('get_screen_capture')
+        self.send_write_command('get_screen_capture')
 
 #specific instrument classes
 #dc power supplies
 class AgilentE3631A(DCPowerSupply):
     def set_voltage_and_current(self, range, voltage, current):
-        self.send_command('set_voltage_and_current', range, voltage, current)
+        self.send_write_command('set_voltage_and_current', range, voltage, current)
 
     def select_output(self, output):
-        self.send_command('select_output', output)
+        self.send_write_command('select_output', output)
 
 class AgilentE3633A(DCPowerSupply):
     def set_voltage_and_current(self, voltage, current):
-        self.send_command('set_voltage_and_current', voltage, current)
+        self.send_write_command('set_voltage_and_current', voltage, current)
 
     def set_voltage_limit(self, voltageLimit):
-        self.send_command('set_voltage_limit', voltageLimit)
+        self.send_write_command('set_voltage_limit', voltageLimit)
 
     def set_current_limit(self, currentLimit):
-        self.send_command('set_current_limit', currentLimit)
+        self.send_write_command('set_current_limit', currentLimit)
 
     def set_range(self, range):
-        self.send_command('set_range', range)
+        self.send_write_command('set_range', range)
 
 #electronic loads
 class Agilent6060B(ElectronicLoad):
     def get_error(self):
-        return self.send_command('get_error')
+        return self.send_read_command('get_error')
 
 #oscilloscopes
 class TektronixMSO4104BL(Oscilloscope):

@@ -13,7 +13,7 @@ try:
 	print 'Connecting:'
 	ps = mtest.AgilentE3631A('AgilentE3631A')
 except:
-	raise Exception('Error: Could not connect to AgilentE3631A.')
+	print 'Error: Could not connect to AgilentE3631A.'
 
 print '\n----------\n'
 
@@ -32,7 +32,7 @@ try:
 	ps.get_programmed_current()
 	ps.get_current()
 except:
-	raise Exception('Error: Could not successfully send all commands. Try increasing serialTimeout parameter in AgilentE3631A.json.')
+	print 'Error: Could not successfully send all commands. Try increasing serialTimeout parameter in AgilentE3631A.json.'
 
 print '\n----------\n'
 
@@ -51,13 +51,13 @@ try:
 	if programmedVoltage == VOLTAGE:
 		print 'Programmed voltage is correct'
 	else:
-		raise Exception('Error: Programmed voltage is not correct.')
+		print 'Error: Programmed voltage is not correct.'
 	measuredVoltage = ps.get_voltage()	
 	print 'Reading measured voltage: %f' % measuredVoltage
 	if abs(measuredVoltage - VOLTAGE) < MEASUREMENT_TOLERANCE:
 		print 'Measured voltage matches programmed voltage'
 	else:
-		raise Exception('Error: Measured voltage does not match programmed voltage.')
+		print 'Error: Measured voltage does not match programmed voltage.'
 	print 'Setting current to %f' % CURRENT
 	ps.set_current(CURRENT)
 	programmedCurrent = ps.get_programmed_current()
@@ -65,9 +65,9 @@ try:
 	if programmedCurrent == CURRENT:
 		print 'Programmed current is correct'
 	else:
-		raise Exception('Error: Programmed current is not correct.')
+		print 'Error: Programmed current is not correct.'
 except:
-	raise Exception('Error: Could not successfully complete testing command functionality. Try increasing serialTimeout parameter in AgilentE3631A.json.')
+	print 'Error: Could not successfully complete testing command functionality. Try increasing serialTimeout parameter in AgilentE3631A.json.'
 
 print '\n----------\n'
 
@@ -91,11 +91,11 @@ if ps.communicationProtocol == 'serial':
 				print 'Measured voltage matches programmed voltage'
 				minTimeout = timeout
 			else:
-				raise Exception('Error: Measured voltage does not match programmed voltage.')
+				print 'Error: Measured voltage does not match programmed voltage.'
 			timeout -= TIMEOUT_STEP
 			print '\n'
 	except:
-		raise Exception('This error should be expected during the minimum serial timeout test (likely due to the timeout being too short). Minimum serial timeout is %s seconds. Set serialTimeout parameter in AgilentE3631A.json to this value to increase programming speed.' % minTimeout)
+		print 'This error should be expected during the minimum serial timeout test (likely due to the timeout being too short). Minimum serial timeout is %s seconds. Set serialTimeout parameter in AgilentE3631A.json to this value to increase programming speed.' % minTimeout
 
 	print 'Minimum serial timeout is %f seconds. Set serialTimeout parameter in AgilentE3631A.json to this value to increase programming speed.' % minTimeout
 
