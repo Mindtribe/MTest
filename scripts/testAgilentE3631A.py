@@ -71,31 +71,30 @@ except:
 
 print '\n----------\n'
 
-if ps.communicationProtocol == 'serial':
-	try:
-		print 'Testing minimum serial timeout:\n'
-		timeout = ps.timeout
-		minTimeout = timeout
-		while timeout >= 0:
-			print 'Testing voltage measurement with %s second timeout:' % timeout
-			ps.reset()
-			ps.timeout = timeout
-			ps.select_output(OUTPUT)
-			ps.set_output('on')
-			randomVoltage = random.random()
-			print 'Setting voltage to %f' % randomVoltage
-			ps.set_voltage(randomVoltage)
-			measuredVoltage = ps.get_voltage()
-			print 'Reading measured voltage: %f' % measuredVoltage
-			if abs(measuredVoltage - randomVoltage) < MEASUREMENT_TOLERANCE:
-				print 'Measured voltage matches programmed voltage'
-				minTimeout = timeout
-			else:
-				print 'Error: Measured voltage does not match programmed voltage.'
-			timeout -= TIMEOUT_STEP
-			print '\n'
-	except:
-		print 'This error should be expected during the minimum serial timeout test (likely due to the timeout being too short). Minimum serial timeout is %s seconds. Set serialTimeout parameter in AgilentE3631A.json to this value to increase programming speed.' % minTimeout
+try:
+	print 'Testing minimum timeout:\n'
+	timeout = ps.timeout
+	minTimeout = timeout
+	while timeout >= 0:
+		print 'Testing voltage measurement with %s second timeout:' % timeout
+		ps.reset()
+		ps.timeout = timeout
+		ps.select_output(OUTPUT)
+		ps.set_output('on')
+		randomVoltage = random.random()
+		print 'Setting voltage to %f' % randomVoltage
+		ps.set_voltage(randomVoltage)
+		measuredVoltage = ps.get_voltage()
+		print 'Reading measured voltage: %f' % measuredVoltage
+		if abs(measuredVoltage - randomVoltage) < MEASUREMENT_TOLERANCE:
+			print 'Measured voltage matches programmed voltage'
+			minTimeout = timeout
+		else:
+			print 'Error: Measured voltage does not match programmed voltage.'
+		timeout -= TIMEOUT_STEP
+		print '\n'
+except:
+	print 'This error should be expected during the minimum timeout test (likely due to the timeout being too short). Minimum timeout is %s seconds. Set timeout parameter in AgilentE3631A.json to this value to increase programming speed.' % minTimeout
 
-	print 'Minimum serial timeout is %f seconds. Set serialTimeout parameter in AgilentE3631A.json to this value to increase programming speed.' % minTimeout
+print 'Minimum timeout is %f seconds. Set timeout parameter in AgilentE3631A.json to this value to increase programming speed.' % minTimeout
 

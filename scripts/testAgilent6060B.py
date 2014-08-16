@@ -84,31 +84,30 @@ except:
 
 print '\n----------\n'
 
-if el.communicationProtocol == 'serial':
-	try:
-		print 'Testing minimum timeout:\n'
-		timeout = el.timeout
-		minTimeout = timeout
-		while timeout >= 0:
-			print 'Testing current measurement with %s second timeout:' % timeout
-			el.reset()
-			el.timeout = timeout
-			el.set_mode('CURRent')
-			el.set_input('on')
-			randomCurrent = random.random()
-			print 'Setting current to %f' % randomCurrent
-			el.set_current(randomCurrent)
-			measuredCurrent = el.get_current()
-			print 'Reading measured current: %f' % measuredCurrent
-			if abs(measuredCurrent - 0) < MEASUREMENT_TOLERANCE:
-				print 'Measured current matches expected current (0A, since the input terminals are floating)'
-				minTimeout = timeout
-			else:
-				print 'Error: Measured current does not match expected current'
-			timeout -= TIMEOUT_STEP
-			print '\n'
-	except:
-		print 'This error should be expected during the minimum timeout test (likely due to the timeout being too short). Minimum timeout is %s seconds. Set timeout parameter in AgilentE3631A.json to this value to increase programming speed.' % minTimeout
+try:
+	print 'Testing minimum timeout:\n'
+	timeout = el.timeout
+	minTimeout = timeout
+	while timeout >= 0:
+		print 'Testing current measurement with %s second timeout:' % timeout
+		el.reset()
+		el.timeout = timeout
+		el.set_mode('CURRent')
+		el.set_input('on')
+		randomCurrent = random.random()
+		print 'Setting current to %f' % randomCurrent
+		el.set_current(randomCurrent)
+		measuredCurrent = el.get_current()
+		print 'Reading measured current: %f' % measuredCurrent
+		if abs(measuredCurrent - 0) < MEASUREMENT_TOLERANCE:
+			print 'Measured current matches expected current (0A, since the input terminals are floating)'
+			minTimeout = timeout
+		else:
+			print 'Error: Measured current does not match expected current'
+		timeout -= TIMEOUT_STEP
+		print '\n'
+except:
+	print 'This error should be expected during the minimum timeout test (likely due to the timeout being too short). Minimum timeout is %s seconds. Set timeout parameter in AgilentE3631A.json to this value to increase programming speed.' % minTimeout
 
-	print 'Minimum timeout is %f seconds. Set timeout parameter in AgilentE3631A.json to this value to increase programming speed.' % minTimeout
+print 'Minimum timeout is %f seconds. Set timeout parameter in AgilentE3631A.json to this value to increase programming speed.' % minTimeout
 
