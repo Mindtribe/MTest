@@ -78,12 +78,12 @@ print '\n----------\n'
 if ps.communicationProtocol == 'serial':
 	try:
 		print 'Testing minimum serial timeout:\n'
-		timeout = ps.handle.timeout
+		timeout = ps.timeout
 		minTimeout = timeout
 		while timeout >= 0:
 			print 'Testing voltage measurement with %s second timeout:' % timeout
 			ps.reset()
-			ps.handle.timeout = timeout
+			ps.timeout = timeout
 			ps.set_output('on')
 			ps.set_range(RANGE)
 			randomVoltage = random.random()
