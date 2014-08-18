@@ -106,12 +106,11 @@ Confirm successful installation of mtest python module:
 1. Open terminal in OSX or command prompt in WINDOWS
 
 2. Start 32-bit python: 
-	OSX:
-	\>\> python32   
-	WINDOWS:
-	\>\> python 
 
-3. >> import mtest
+	OSX: \>\> python32   
+	WINDOWS: \>\> python 
+
+3. \>\> import mtest
 
 4. If the module imports without raising errors, installation was successful
 
@@ -122,10 +121,9 @@ Quick capture from Tektronix MSO4104B-L Oscilloscope:
 2. Open terminal in OSX or command prompt in WINDOWS
 
 3. Start 32-bit python: 
-	OSX:
-	\>\> python32   
-	WINDOWS:
-	\>\> python 
+
+	OSX: \>\> python32   
+	WINDOWS: \>\> python 
 
 4. \>\> import mtest
 
