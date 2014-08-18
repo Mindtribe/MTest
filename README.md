@@ -35,6 +35,11 @@ OSX:
 
 5. Install the Prologix GPIB-USB Controller 6.0 USB Driver for OSX: http://prologix.biz 
 
+6. In order to call mtest.py from anywhere, set the value of the INSTRUMENT_DIRECTORY global variable in 
+   MTest/mtest.py to the absolute path of MTest/instruments. Otherwise you will only be able to call
+   mtest.py from MTest/
+
+
 WINDOWS:
 
 1. Install NI-VISA 5.4.1: http://www.ni.com/download/ni-visa-5.4.1/4626/en/
@@ -49,6 +54,9 @@ WINDOWS:
 
 4. Install the Prologix GPIB-USB Controller 6.0 USB Driver for WINDOWS: http://prologix.biz 
 
+5. In order to call mtest.py from anywhere, set the value of the INSTRUMENT_DIRECTORY global variable in 
+   MTest/mtest.py to the absolute path of MTest/instruments. Otherwise you will only be able to call
+   mtest.py from MTest/
 
 ## Instruments
 
