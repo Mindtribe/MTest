@@ -1,8 +1,8 @@
-# Test script to cycle the electronic load, as if it were the motor, to determine maximum usage duty cycles for a battery. 
-# Samples battery current and voltage and outputs results to csv files.
-# Before running the script, you should set the CURRENT_PROFILE variable, which is a list of ordered pairs that specify
-# (currentToBeApplied, duration). For example, if you want to apply 1A for 1s, then 0A for 10s, set 
-# CURRENT_PROFILE = [(1,0), (0,10)]
+"""Test script to cycle the electronic load, as if it were a motor, to determine maximum usage duty cycles for a battery. 
+Samples battery current and voltage and outputs results to csv files.
+Before running the script, you should set the parameters in the batteryCycle.json file that must be placed in the directory
+from which the script is called. The currentProfile variable in batteryCycle.json is a list of ordered pairs that specify
+(currentToBeApplied, duration). For example, if you want to apply 1A for 1s, then 0A for 10s, set currentProfile = [[1,0], [0,10]]"""
 
 import mtest
 import time
@@ -10,36 +10,43 @@ import u3
 import csv
 import os
 import math 
+import json
+
+with open('./batteryCycle.json', 'rb') as parametersFile:
+	parametersDict = json.load(parametersFile)
 
 #global constants
 #list of ordered pairs that specify (currentToBeApplied, duration). 
-CURRENT_PROFILE = [(3.5, 0.2), (1, 0.2), (5, 0.2), (2.5, 1.8), (1.5, 0.3), (3.5, 0.2), (0, 2.0), (0.6, 4.0)]
+CURRENT_PROFILE = parametersDict['currentProfile']
 #voltage at which battery is considered drained
-MIN_BATTERY_VOLTAGE = 3.7
+MIN_BATTERY_VOLTAGE = parametersDict['minBatteryVoltage']
 #voltage at which battery is considered charged
-CHARGED_BATTERY_VOLTAGE = 3.8
-DISCHARGE_SAMPLING_PERIOD = 0.5
-CHARGE_SAMPLING_PERIOD = 60
-SWITCH_GATE_OFF_VOLTAGE = 5
-SWITCH_GATE_ON_VOLTAGE = 0
-SWITCHING_DAC_NUMBER = 0
-ANALOG_INPUT_PORT = 1
-VOLTAGE_DIVIDER_RATIO = 0.5
-#note that this is an empirical approximation of the time it takes to set the current on the electronic load. 
-#This value is determined mostly by the timeout parameter set in AGILENT_6060B.py. 
-PROGRAMMING_DELAY = 0.2
+CHARGED_BATTERY_VOLTAGE = parametersDict['chargedBatteryVoltage']
+#desired sampling period while battery is being discharged
+DISCHARGE_SAMPLING_PERIOD = parametersDict['dischargeSamplingPeriod']
+#desired sampling period while battery is being charged
+CHARGE_SAMPLING_PERIOD = parametersDict['chargeSamplingPeriod']
+#voltage to apply to the gate of the switch to disconnect the battery charger
+SWITCH_GATE_OFF_VOLTAGE = parametersDict['switchGateOffVoltage']
+#voltage to apply to the gate of the switch to connect the battery charger
+SWITCH_GATE_ON_VOLTAGE = parametersDict['switchGateOnVoltage']
+#LabJack DAC that will be used to drive the switch to connect or disconnect the battery charger
+SWITCHING_DAC_NUMBER = parametersDict['switchingDacNumber']
+#LabJack port that will be used for reading analog voltages
+ANALOG_INPUT_PORT = parametersDict['analogInputPort']
+#Voltage divider ratio used to divide battery voltage down to a value that is within the range of the LabJack ADCs (0V-2.4V)
+VOLTAGE_DIVIDER_RATIO = parametersDict['voltageDividerRatio']
 
 def WriteRow(csvWriter, entryList):
 	csvWriter.writerow(entryList)
 
 def ApplyCurrentProfile(electronicLoad, labJackHandle, currentProfile, startTime, csvWriter, dischargeCycle):
-	#currentProfile should be a list of tuples which represent ordered pairs of (currentToBeApplied, duration).
 	#write before current ramping
 	WriteRow(csvWriter, [time.time()-startTime, ReadVoltage(labJackHandle), 0, 'discharge', dischargeCycle])
 	for pairNumber, pair in enumerate(currentProfile):
 		current = pair[0]
 		duration = pair[1]
-		#assume that setting the current takes PROGRAMMING_DELAY seconds
+		#Setting the current takes electronicLoad.timeout seconds
 		electronicLoad.set_current(current)
 		print 'Set current to %f' % current
 		voltage = ReadVoltage(labJackHandle)
@@ -47,7 +54,7 @@ def ApplyCurrentProfile(electronicLoad, labJackHandle, currentProfile, startTime
 			WriteRow(csvWriter, [time.time()-startTime, voltage, current, 'recover', dischargeCycle])
 		else:
 			WriteRow(csvWriter, [time.time()-startTime, voltage, current, 'discharge', dischargeCycle])
-		numSamples = int(math.floor((duration-PROGRAMMING_DELAY)/DISCHARGE_SAMPLING_PERIOD))
+		numSamples = int(math.floor((duration-electronicLoad.timeout)/DISCHARGE_SAMPLING_PERIOD))
 		for sample in range(numSamples):
 			time.sleep(DISCHARGE_SAMPLING_PERIOD)
 			voltage = ReadVoltage(labJackHandle)
@@ -69,10 +76,6 @@ def DisconnectCharger(labJackHandle):
 	labJackHandle.getFeedback(u3.DAC16(SWITCHING_DAC_NUMBER, dacCode))
 
 def main():
-	#bounds check on CURRENT_PROFILE durations
-	for pair in CURRENT_PROFILE:
-		if pair[1] < PROGRAMMING_DELAY:
-			raise Exception('ERROR: all durations in CURRENT_PROFILE must be greater than %f. This is the minimum time required to set current on the electronic load.' % PROGRAMMING_DELAY)
 
 	#configure electronic load
 	print 'Connecting to Agilent 6060B'
@@ -86,6 +89,11 @@ def main():
 	DisconnectCharger(lj)
 	# Set ANALOG_INPUT_PORT to analog
 	lj.configAnalog(ANALOG_INPUT_PORT)
+
+	#bounds check on CURRENT_PROFILE durations
+	for pair in CURRENT_PROFILE:
+		if pair[1] < el.timeout:
+			raise Exception('ERROR: all durations in CURRENT_PROFILE must be greater than %f. This is the minimum time required to set current on the electronic load.' % el.timeout)
 
 	#set initial time
 	startTime = time.time()
@@ -103,6 +111,7 @@ def main():
 
 	chargeCycle = 0
 	while True:
+		el.set_input('ON')
 		chargeCycle += 1
 		#create output file
 		outputFile = open(os.path.join(outputBaseFilename, 'charge-cycle-%d.csv' % chargeCycle), 'wb')

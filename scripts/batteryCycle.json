@@ -1,0 +1,12 @@
+{	
+	"currentProfile": [[3.5, 0.2], [1, 0.2], [5, 0.2], [2.5, 1.8], [1.5, 0.3], [3.5, 0.2], [0, 2.0], [0.6, 4.0], [0, 50.0]],
+	"minBatteryVoltage": 3.7,
+	"chargedBatteryVoltage": 4.1,
+	"dischargeSamplingPeriod": 0.5,
+	"chargeSamplingPeriod": 60,
+	"switchGateOffVoltage": 5,
+	"switchGateOnVoltage": 0,
+	"switchingDacNumber": 0,
+	"analogInputPort": 1,
+	"voltageDividerRatio": 0.5 	
+}

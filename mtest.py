@@ -28,7 +28,7 @@ for instrumentAddress in INSTRUMENT_ADDRESSES:
     except:
         INSTRUMENT_ADDRESSES.remove(instrumentAddress)
         pass
-        
+
 #base class
 class Instrument(object):
 
