@@ -12,8 +12,10 @@ import os
 import math 
 import json
 
-with open('./batteryCycle.json', 'rb') as parametersFile:
-	parametersDict = json.load(parametersFile)
+PARAMETER_FILE_PATH = './batteryCycle.json'
+
+with open(PARAMETER_FILE_PATH, 'rb') as parameterFile:
+	parametersDict = json.load(parameterFile)
 
 #global constants
 #list of ordered pairs that specify (currentToBeApplied, duration). 
