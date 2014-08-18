@@ -1,5 +1,7 @@
 MTest
 ======
+
+
 ## Description
 
 A python library for instrumentation control
@@ -7,6 +9,7 @@ A python library for instrumentation control
 By: Alex Omid-Zohoor 
 
 Released August 2014
+
 
 ## Dependencies
 
@@ -57,6 +60,7 @@ WINDOWS:
 5. In order to call mtest.py from anywhere, set the value of the INSTRUMENT_DIRECTORY global variable in 
    MTest/mtest.py to the absolute path of MTest/instruments. Otherwise you will only be able to call
    mtest.py from MTest/
+
 
 ## Instruments
 
@@ -134,7 +138,31 @@ Quick capture from Tektronix MSO4104B-L Oscilloscope:
 
 ## Scripts
 
+There are a number of test and functional scripts in the MTest/scripts directory. Test scripts are meant to test the ability
+to control specific instruments with mtest, as well as determine the minimum instrument timeout (if relevant). When adding
+a new instrument to MTest, one should also create a corresponding test script. Functional scripts, such as batteryCycle.py, are
+template scripts that can be used for automated testing. 
 
 
 ## Organization 
+
+mtest.py is organized in an object-oriented fashion, where each instrument inherits properties from a base class of Instrument. 
+Subclasses of Instrument currently include DCPowerSupply, Oscilloscope, and ElectronicLoad. Subclasses of these classes are 
+individual instruments themselves, such as Agilent6060B, AgilentE3633A, AgilentE3631A, and TektronixMSO4104BL. 
+
+Instrument
+	DCPowerSupply
+		AgilentE3633A
+		AgilentE3631A
+	ElectronicLoad
+		Agilent6060B
+	Oscilloscope
+		TektronixMSO4104BL
+
+This structure was mainly chosen to keep the code organized and scalable. The level of code reuse is minor, as each time a new 
+instrument is added a custom JSON file must be created in MTest/instruments. However, this structure can help guide the process
+of adding a new instrument. For example, all instruments inherit from the base instrument class, and thus must contain commands
+for the Instrument methods of get_id() and reset(). All instruments that inherit from the DCPowerSupply class must include a
+command for set_voltage(), etc.
+
 
