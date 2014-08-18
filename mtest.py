@@ -9,7 +9,7 @@ import csv
 import shutil
 from BeautifulSoup import BeautifulSoup as soup
 
-#iniitalize resource manager to help find connected devices. This is required to properly initialize the USB_ADDRESSES global variable.
+#iniitalize resource manager to help find connected devices. This is required to properly initialize the INSTRUMENT_ADDRESSES global variable.
 rm = visa.ResourceManager()
 
 #globals
@@ -28,7 +28,7 @@ for instrumentAddress in INSTRUMENT_ADDRESSES:
     except:
         INSTRUMENT_ADDRESSES.remove(instrumentAddress)
         pass
-
+        
 #base class
 class Instrument(object):
 
