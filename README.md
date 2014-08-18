@@ -99,7 +99,7 @@ description: Description of the command copied from the instrument's User Manual
 
 ## Examples
 
-In the following examples, '>>' indicates a terminal, command prompt, or python prompt command. 
+In the following examples, '\>\>' indicates a terminal, command prompt, or python prompt command. 
 
 Confirm successful installation of mtest python module:
 
@@ -107,9 +107,9 @@ Confirm successful installation of mtest python module:
 
 2. Start 32-bit python: 
 	OSX:
-	>> python32   
+	\>\> python32   
 	WINDOWS:
-	>> python 
+	\>\> python 
 
 3. >> import mtest
 
@@ -123,15 +123,15 @@ Quick capture from Tektronix MSO4104B-L Oscilloscope:
 
 3. Start 32-bit python: 
 	OSX:
-	>> python32   
+	\>\> python32   
 	WINDOWS:
-	>> python 
+	\>\> python 
 
-4. >> import mtest
+4. \>\> import mtest
 
-5. >> osc = mtest.TektronixMSO4104BL('TektronixMSO4104BL', 'ethernet')
+5. \>\> osc = mtest.TektronixMSO4104BL('TektronixMSO4104BL', 'ethernet')
 
-6. >> osc.get_screen_capture()
+6. \>\> osc.get_screen_capture()
 
 7. This should create a timestamped directory with a csv file containing the waveform data of all 4 channels and a screenshot png image
 
