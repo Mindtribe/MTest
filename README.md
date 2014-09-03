@@ -17,7 +17,6 @@ Released August 2014
 * PyVISA 1.5
 * mechanize 0.2.5
 * BeautifulSoup 3.2.1
-* pyserial 2.7
 * NI-VISA 5.4.1 
 
 
