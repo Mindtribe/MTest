@@ -1,0 +1,20 @@
+{	
+	"parameters":	{
+						"id": "",
+						"ipAddress": "",
+						"terminationCharacters": "",
+						"timeout": ""
+					},
+	"commands": 	{
+						"get_id": 		{ 
+											"commandString": "",
+											"arguments": "",
+											"description": ""
+										},
+						"reset": 		{ 
+											"commandString": "",
+											"arguments": "",
+											"description": ""
+										},												
+					}
+}
