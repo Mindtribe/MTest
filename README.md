@@ -29,7 +29,7 @@ OSX:
 2. Install python dependencies: pip install -r requirements.txt
 
 3. Add path to the MTest directory to PYTHONPATH. This can be done by adding the following line to
-   your ~/.bash_profile: export PYTHONPATH="<path to MTest>:$PYTHONPATH"
+   your ~/.bash_profile: export PYTHONPATH="<path to MTest\>:$PYTHONPATH"
 
 4. Add the following line to your ~/.bash_profile: alias python32='arch -i386 /usr/bin/python2.7'
    This creates an alias for 32-bit python. You will need to call all functions from 32-bit
