@@ -39,17 +39,17 @@ OSX:
   
 3. Sometimes OSX can also get messy when it comes to pip. To determine your default version of pip, type the following command: which pip  
   
-If you get the output "/usr/local/bin/pip", you can move on to the next step. If you get no output, that means that you do not have pip installed, in which case, you can simply install it using the following command: sudo easy_install pip  
+  If you get the output "/usr/local/bin/pip", you can move on to the next step. If you get no output, that means that you do not have pip installed, in which case, you can simply install it using the following command: sudo easy_install pip  
   
-If you get any other output, you must remove all existing pip packages and reinstall pip. To do this, cd into the directory where pip currently exists, which should be apparent from the output of "which pip", and then run the following command: sudo rm -rf pip  
+  If you get any other output, you must remove all existing pip packages and reinstall pip. To do this, cd into the directory where pip currently exists, which should be apparent from the output of "which pip", and then run the following command: sudo rm -rf pip  
   
-Repeat this command for all versions of pip (e.g. pip2, pip2.7, etc.)  
+  Repeat this command for all versions of pip (e.g. pip2, pip2.7, etc.)  
   
-Now reinstall pip using the following command: sudo easy_install pip  
+  Now reinstall pip using the following command: sudo easy_install pip  
   
-Then, type the following command: which pip  
+  Then, type the following command: which pip  
   
-You should now get the output "/usr/local/bin/pip"  
+  You should now get the output "/usr/local/bin/pip"  
   
 4. To install python dependencies, cd into the MTest/ directory and run the following command: sudo pip install -r requirements.txt
 
