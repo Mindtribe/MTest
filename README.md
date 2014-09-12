@@ -73,7 +73,7 @@ WINDOWS:
 
 2. To install python dependencies, you will need pip. If you do not already have pip installed, you will need to install it: https://pip.pypa.io/en/latest/installing.html
 
-Once pip is installed, cd into the MTest/ directory and run the following command: pip install -r requirements.txt
+  Once pip is installed, cd into the MTest/ directory and run the following command: pip install -r requirements.txt
 
 3. Add path to the MTest directory to PYTHONPATH. This can be done by going to 
    My Computer > Properties > Advanced System Settings > Environment Variables >
