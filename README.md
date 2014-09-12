@@ -32,8 +32,8 @@ If you get the output "/usr/bin/python", you can move on to step 3. Otherwise, a
 
 Then, type the following commands:
 
-* source ~/.bash_profile
-* which python
+source ~/.bash_profile  
+which python
 
 You should now get the output "/usr/bin/python".
 
