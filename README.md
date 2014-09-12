@@ -26,15 +26,15 @@ OSX:
 
 1. Install NI-VISA 5.4.1: http://www.ni.com/download/ni-visa-5.4.1/4631/en/
 
-2. Sometimes OSX can get messy when it comes to python versions. To determine your default version of python, type the following command: which python
-
-If you get the output "/usr/bin/python", you can move on to step 3. Otherwise, add the following line to your ~/.bash_profile: export PATH=/usr/bin:$PATH
-
+2. Sometimes OSX can get messy when it comes to python versions. To determine your default version of python, type the following command: which python  
+  
+If you get the output "/usr/bin/python", you can move on to step 3. Otherwise, add the following line to your ~/.bash_profile: export PATH=/usr/bin:$PATH  
+  
 Then, type the following commands:
 
 source ~/.bash_profile  
-which python
-
+which python  
+  
 You should now get the output "/usr/bin/python".
 
 3. Sometimes OSX can also get messy when it comes to pip. To determine your default version of pip, type the following command: which pip
