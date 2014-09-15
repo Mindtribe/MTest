@@ -138,7 +138,7 @@ Confirm successful installation of mtest python module:
 
 3. \>\> import mtest
 
-4. If the module imports without raising errors, installation was successful
+4. If the module imports without raising an ImportError, installation was successful
 
 Quick capture from Tektronix MSO4104B-L Oscilloscope:
 
@@ -166,6 +166,35 @@ There are a number of test and functional scripts in the MTest/scripts directory
 to control specific instruments with mtest, as well as determine the minimum instrument timeout (if relevant). When adding
 a new instrument to MTest, one should also create a corresponding test script. Functional scripts, such as batteryCycle.py, are
 template scripts that can be used for automated testing. 
+
+
+## Creating Your Own Script
+
+To create your own script, you will need a plain text editor, and basic familiarity with Python. Sublimetext (http://www.sublimetext.com/) is one possible free and cross-platform plain text editor, but any plain text editor (e.g. TextEdit for OSX or NotePad for Windows) will do. Just make sure that you do not use a rich text editor like Microsoft Word. If you are unfamiliar with Python and would like to learn more, you can find a good online introductory course here: https://developers.google.com/edu/python/. The following is an example of how to create and run a basic script that uses mtest. 
+
+1. Open your favorite plain text editor and create a new document. 
+
+2. Save this document to a directory as powersupply.py. For this example, we'll assume the directory is your Desktop folder.
+
+3. Add the following lines to the file:
+
+import mtest #imports the mtest module
+
+ps = mtest.AgilentE3633A('AgilentE3633A') #creates an AgilentE3633A object named ps
+print ps.get_id() #asks ps to identify itself and prints the id string to the console
+ps.set_voltage(1) #sets the voltage of ps to 1 Volt
+
+4. Save the file. 
+
+5. Open a terminal. On OSX, you can simply search for terminal in spotlight. On Windows, from the start menu search bar, search for cmd and open cmd.exe
+
+6. Navigate to the directory where your script exists using the 'cd' command
+
+7. Connect your computer to an AgilentE3633A power supply using the Prologix GPIB-USB Controller 6.0, and turn on the AgilentE3633A power supply. 
+
+8. Run your script from the terminal. On OSX, use the command: python32 powersupply.py. On Windows, use the command: python powersupply.py. 
+
+9. This is should run your script. You should see the following string printed to the terminal: 'HEWLETT-PACKARD,E3633A,0,2.1-6.1-2.1'. Then, the voltage of the AgilentE3633A should be set to 1 Volt. 
 
 
 ## Organization 
