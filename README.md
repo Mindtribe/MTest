@@ -132,11 +132,11 @@ individual instruments themselves, such as Agilent6060B, AgilentE3633A, AgilentE
 * Instrument
   * DCPowerSupply
     * AgilentE3633A
-  * AgilentE3631A
+    * AgilentE3631A
   * ElectronicLoad
-  * Agilent6060B
+    * Agilent6060B
   * Oscilloscope
-  * TektronixMSO4104BL
+    * TektronixMSO4104BL
 
 This structure was mainly chosen to keep the code organized and scalable. The level of code reuse is minor, as each time a new 
 instrument is added a custom JSON file must be created in MTest/instruments. However, this structure can help guide the process
