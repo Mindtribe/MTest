@@ -123,6 +123,26 @@ arguments: Brief description of the arguments that the command takes
 description: Description of the command copied from the instrument's User Manual or Programming Manual
 
 
+## Organization 
+
+mtest.py is organized in an object-oriented fashion, where each instrument inherits properties from a base class of Instrument. 
+Subclasses of Instrument currently include DCPowerSupply, Oscilloscope, and ElectronicLoad. Subclasses of these classes are 
+individual instruments themselves, such as Agilent6060B, AgilentE3633A, AgilentE3631A, and TektronixMSO4104BL. 
+
+* Instrument
+  * DCPowerSupply
+    * AgilentE3633A
+  * AgilentE3631A
+  * ElectronicLoad
+  * Agilent6060B
+  * Oscilloscope
+  * TektronixMSO4104BL
+
+This structure was mainly chosen to keep the code organized and scalable. The level of code reuse is minor, as each time a new 
+instrument is added a custom JSON file must be created in MTest/instruments. However, this structure can help guide the process
+of adding a new instrument. For example, all instruments inherit from the base instrument class, and thus must contain commands
+for the Instrument methods of get_id() and reset(). All instruments that inherit from the DCPowerSupply class must include a
+command for set_voltage(), etc.
 ## Examples
 
 In the following examples, '\>\>' indicates a terminal, command prompt, or python prompt command. 
@@ -197,25 +217,6 @@ To create your own script, you will need a plain text editor, and basic familiar
 9. This is should run your script. You should see the following string printed to the terminal: 'HEWLETT-PACKARD,E3633A,0,2.1-6.1-2.1'. Then, the voltage of the AgilentE3633A should be set to 1 Volt. 
 
 
-## Organization 
 
-mtest.py is organized in an object-oriented fashion, where each instrument inherits properties from a base class of Instrument. 
-Subclasses of Instrument currently include DCPowerSupply, Oscilloscope, and ElectronicLoad. Subclasses of these classes are 
-individual instruments themselves, such as Agilent6060B, AgilentE3633A, AgilentE3631A, and TektronixMSO4104BL. 
-
-* Instrument
-  * DCPowerSupply
-    * AgilentE3633A
-	* AgilentE3631A
-  * ElectronicLoad
-	* Agilent6060B
-  * Oscilloscope
-	* TektronixMSO4104BL
-
-This structure was mainly chosen to keep the code organized and scalable. The level of code reuse is minor, as each time a new 
-instrument is added a custom JSON file must be created in MTest/instruments. However, this structure can help guide the process
-of adding a new instrument. For example, all instruments inherit from the base instrument class, and thus must contain commands
-for the Instrument methods of get_id() and reset(). All instruments that inherit from the DCPowerSupply class must include a
-command for set_voltage(), etc.
 
 
