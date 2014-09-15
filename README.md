@@ -178,11 +178,11 @@ To create your own script, you will need a plain text editor, and basic familiar
 
 3. Add the following lines to the file:
 
-  import mtest #imports the mtest module
-
-  ps = mtest.AgilentE3633A('AgilentE3633A') #creates an AgilentE3633A object named ps
-  print ps.get_id() #asks ps to identify itself and prints the id string to the console
-  ps.set_voltage(1) #sets the voltage of ps to 1 Volt
+  import mtest #imports the mtest module  
+    
+  ps = mtest.AgilentE3633A('AgilentE3633A') #creates an AgilentE3633A object named ps  
+  print ps.get_id() #asks ps to identify itself and prints the id string to the console  
+  ps.set_voltage(1) #sets the voltage of ps to 1 Volt  
 
 4. Save the file. 
 
