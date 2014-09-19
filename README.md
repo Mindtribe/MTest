@@ -65,7 +65,7 @@ OSX:
    This creates an alias for 32-bit python. You will need to call all functions from 32-bit
    python since NI-VISA is a 32-bit library
 
-WINDOWS: Note that this set of instructions is rough. If you are having trouble, please grab someone from the software team. 
+WINDOWS: Note that this set of instructions is rough. If you are having trouble, please grab someone from the Software team. 
 
 1. Install NI-VISA 5.4.1: smb://mt-data/Software/MTestInstallers/NI/WINDOWS/NIVISA541full_downloader.exe
 
@@ -247,6 +247,9 @@ To create your own script, you will need a plain text editor, and basic familiar
 
 9. This is should run your script. You should see the following string printed to the terminal: 'HEWLETT-PACKARD,E3633A,0,2.1-6.1-2.1'. Then, the voltage of the AgilentE3633A should be set to 1 Volt. 
 
+IMPORTANT:
+
+Note that mtest is designed to use an explicit 'timeout' after any command is sent. This 'timeout' parameter is set per instrument in the instrument's corresponding json file. The default values should be sufficient, but if your script is not working, it may be because you are issueing commands too fast and the instrument is unable to execute one command before the next one is sent. In order to resolve this problem, you can increase the 'timeout' parameter. If this description is unclear, please grab someone from the Software team. 
 
 
 
