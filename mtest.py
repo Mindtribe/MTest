@@ -69,7 +69,13 @@ class Instrument(object):
         return str(self.commandDict[commandName]['commandString'])
 
     def send_read_command(self, commandName, *parameters):
-        #form parameter tuple
+        """
+        This function sends commands that are meant to receive and return data from the instrument. 
+        Accordingly, pyvisa's ask() function is used rather than its write() function. Note that time.sleep
+        is called in order to explicitly allow the instrument enough time to process the command before 
+        another command can be sent.  
+        """
+        #form parameters tuple
         parametersTuple = ()
         for parameter in parameters:
             #note that we typecast all parameters as strings here
@@ -80,7 +86,13 @@ class Instrument(object):
         return result
 
     def send_write_command(self, commandName, *parameters):
-        #form parameter tuple
+        """
+        This function sends commands that are not meant to receive or return data from the instrument. 
+        Accordingly, pyvisa's write() function is used rather than its ask() function. Note that time.sleep
+        is called in order to explicitly allow the instrument enough time to process the command before
+        another command can be sent. 
+        """
+        #form parameters tuple
         parametersTuple = ()
         for parameter in parameters:
             #note that we typecast all parameters as strings here
