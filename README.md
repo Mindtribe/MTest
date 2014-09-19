@@ -30,7 +30,7 @@ OSX:
 
   If the terminal outputs documentation for git, you already have git installed. But if the terminal instead brings up a prompt, go ahead and download and install command line tools. This will install git. 
 
-3. To clone this MTest code repository, open a terminal and type the following commands: 
+3. To clone this MTest code repository, open a terminal and type the following commands:  
   cd ~
   git clone https://github.com/MindTribe/MTest.git
 
@@ -40,7 +40,7 @@ OSX:
   
   This should install pip to the following location: /usr/local/bin/pip
   
-5. To install python dependencies, open a terminal window, and type the following commands:
+5. To install python dependencies, open a terminal window, and type the following commands:  
   cd ~/MTest 
   sudo pip install -r requirements.txt
 
