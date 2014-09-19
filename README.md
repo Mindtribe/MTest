@@ -24,50 +24,48 @@ Released August 2014
 
 OSX:
 
-1. Install NI-VISA 5.4.1: smb://mt-data/Software/MTestInstallers/NI/OSX/NI-VISA-5.4.1.dmg
+1. Download and install sublimetext: http://www.sublimetext.com
 
-2. Sometimes OSX can get messy when it comes to python versions. To determine your default version of python, type the following command: which python   
+2. To install git (an open source version control system), open a terminal and type the following command: git
 
-  If you get the output "/usr/bin/python", you can move on to the next step. Otherwise, add the following line to your ~/.bash_profile: export PATH=/usr/bin:$PATH  
-  
-  Then, type the following commands:  
-  
-  source ~/.bash_profile  
-  which python  
-  
-  You should now get the output "/usr/bin/python".  
-  
-3. Sometimes OSX can also get messy when it comes to pip. To determine your default version of pip, type the following command: which pip  
-  
-  If you get the output "/usr/local/bin/pip", you can move on to the next step. If you get no output, that means that you do not have pip installed, in which case, you can simply install it using the following command: sudo easy_install pip  
-  
-  If you get any other output, you must remove all existing pip packages and reinstall pip. To do this, cd into the directory where pip currently exists, which should be apparent from the output of "which pip", and then run the following command: sudo rm -rf pip  
-  
-  Repeat this command for all versions of pip (e.g. pip2, pip2.7, etc.)  
-  
-  Now reinstall pip using the following command: sudo easy_install pip  
-  
-  Then, type the following command: which pip  
-  
-  You should now get the output "/usr/local/bin/pip"  
-  
-4. To install python dependencies, cd into the MTest/ directory and run the following command: sudo pip install -r requirements.txt
+  If the terminal outputs documentation for git, you already have git installed. But if the terminal instead brings up a prompt, go ahead and download and install command line tools. This will install git. 
 
-5. Add path to the MTest directory to PYTHONPATH. This can be done by adding the following line to
+3. To clone this MTest code repository, open a terminal and type the following commands: 
+  cd ~
+  git clone https://github.com/MindTribe/MTest.git
+
+  You should now have a directory called MTest in your home directory. 
+  
+4. To install pip (an open source python package manager), open a terminal window and type the following command: sudo easy_install pip  
+  
+  This should install pip to the following location: /usr/local/bin/pip
+  
+5. To install python dependencies, open a terminal window, and type the following commands:
+  cd ~/MTest 
+  sudo pip install -r requirements.txt
+
+6. In order be able to call mtest.py from anywhere, you must change the value of the INSTRUMENT_DIRECTORY global variable in MTest/mtest.py. To do this, open a finder window, and from the menu toolbar select Go->Go To Folder... Enter "~/MTest" and click "Go". Right click mtest.py and select Open With sublimetext. Change the line:
+
+  INSTRUMENT_DIRECTORY = './MTest/instruments'
+
+  To:
+
+  INSTRUMENT_DIRECTORY = '/Users/alex/MTest/instruments'
+
+  Where alex is a placeholder for your computer's username. For example, on Andy's computer this might be '/Users/andy/MTest/instruments'
+
+7. Install NI-VISA 5.4.1: smb://mt-data/Software/MTestInstallers/NI/OSX/NI-VISA-5.4.1.dmg
+
+8. Install the Prologix GPIB-USB Controller 6.0 USB Driver for OSX: smb://mt-data/Software/MTestInstallers/Prologix/OSX/64-bit/FTDIUSBSerialDriver_v2_2_18.dmg
+
+9. Add path to the MTest directory to PYTHONPATH. This can be done by adding the following line to
    your ~/.bash_profile: export PYTHONPATH="\<path to MTest\>:$PYTHONPATH"
 
-6. Add the following line to your ~/.bash_profile: alias python32='arch -i386 /usr/bin/python2.7'
+10. Add the following line to your ~/.bash_profile: alias python32='arch -i386 /usr/bin/python2.7'
    This creates an alias for 32-bit python. You will need to call all functions from 32-bit
    python since NI-VISA is a 32-bit library
 
-7. Install the Prologix GPIB-USB Controller 6.0 USB Driver for OSX: smb://mt-data/Software/MTestInstallers/Prologix/OSX/64-bit/FTDIUSBSerialDriver_v2_2_18.dmg
-
-8. In order to call mtest.py from anywhere, set the value of the INSTRUMENT_DIRECTORY global variable in 
-   MTest/mtest.py to the absolute path of MTest/instruments. Otherwise you will only be able to call
-   mtest.py from MTest/
-
-
-WINDOWS:
+WINDOWS: Note that this set of instructions is rough. If you are having trouble, please grab someone from the software team. 
 
 1. Install NI-VISA 5.4.1: smb://mt-data/Software/MTestInstallers/NI/WINDOWS/NIVISA541full_downloader.exe
 
@@ -179,6 +177,39 @@ Quick capture from Tektronix MSO4104B-L Oscilloscope:
 
 7. This should create a timestamped directory with a csv file containing the waveform data of all 4 channels and a screenshot png image
 
+# Useful Commands
+
+When using mtest interactively from the terminal, the print_commands(), print_command_description(), and print_command_arguments() functions may be helpful. 
+
+print_commands(): prints all commands associated with a given instrument
+
+print_command_description(commandName): prints the description associated with a given command
+
+print_command_arguments(commandName): prints the arguments that a given command takes
+
+Here is an example output:
+
+\>\> import mtest
+\>\> ps = mtest.AgilentE3633A()
+\>\> ps.print_commands()
+reset
+set_voltage_and_current
+set_range
+get_current
+get_version
+set_current_limit
+get_programmed_current
+get_id
+set_voltage
+set_voltage_limit
+get_voltage
+get_programmed_voltage
+set_current
+set_output
+\>\> ps.print_command_description('set_output')
+This command enables or disables the outputs of the power supply. When the output is disabled, the voltage value is 0 V and the current value is 20 mA. At *RST, the output state is OFF.
+\>\> ps.print_command_arguments('set_output')
+output {OFF|ON}
 
 ## Scripts
 
