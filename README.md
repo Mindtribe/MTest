@@ -31,7 +31,7 @@ OSX:
   If the terminal outputs documentation for git, you already have git installed. But if the terminal instead brings up a prompt, go ahead and download and install command line tools. This will install git. 
 
 3. To clone this MTest code repository, open a terminal and type the following commands:  
-  cd ~
+  cd ~  
   git clone https://github.com/MindTribe/MTest.git
 
   You should now have a directory called MTest in your home directory. 
@@ -41,7 +41,7 @@ OSX:
   This should install pip to the following location: /usr/local/bin/pip
   
 5. To install python dependencies, open a terminal window, and type the following commands:  
-  cd ~/MTest 
+  cd ~/MTest  
   sudo pip install -r requirements.txt
 
 6. In order be able to call mtest.py from anywhere, you must change the value of the INSTRUMENT_DIRECTORY global variable in MTest/mtest.py. To do this, open a finder window, and from the menu toolbar select Go->Go To Folder... Enter "~/MTest" and click "Go". Right click mtest.py and select Open With sublimetext. Change the line:
