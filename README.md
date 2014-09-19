@@ -24,7 +24,7 @@ Released August 2014
 
 OSX:
 
-1. Install NI-VISA 5.4.1: http://www.ni.com/download/ni-visa-5.4.1/4631/en/
+1. Install NI-VISA 5.4.1: smb://mt-data/Software/MTestInstallers/NI/OSX/NI-VISA-5.4.1.dmg
 
 2. Sometimes OSX can get messy when it comes to python versions. To determine your default version of python, type the following command: which python   
 
@@ -60,7 +60,7 @@ OSX:
    This creates an alias for 32-bit python. You will need to call all functions from 32-bit
    python since NI-VISA is a 32-bit library
 
-7. Install the Prologix GPIB-USB Controller 6.0 USB Driver for OSX: http://prologix.biz 
+7. Install the Prologix GPIB-USB Controller 6.0 USB Driver for OSX: smb://mt-data/Software/MTestInstallers/Prologix/OSX/64-bit/FTDIUSBSerialDriver_v2_2_18.dmg
 
 8. In order to call mtest.py from anywhere, set the value of the INSTRUMENT_DIRECTORY global variable in 
    MTest/mtest.py to the absolute path of MTest/instruments. Otherwise you will only be able to call
@@ -69,7 +69,7 @@ OSX:
 
 WINDOWS:
 
-1. Install NI-VISA 5.4.1: http://www.ni.com/download/ni-visa-5.4.1/4626/en/
+1. Install NI-VISA 5.4.1: smb://mt-data/Software/MTestInstallers/NI/WINDOWS/NIVISA541full_downloader.exe
 
 2. To install python dependencies, you will need pip. If you do not already have pip installed, you will need to install it: https://pip.pypa.io/en/latest/installing.html
 
@@ -81,7 +81,7 @@ WINDOWS:
    Variable value to <path to MTest>. Or if PYTHONPATH already exists, simply append
    <path to MTest> to the end of the Variable value
 
-4. Install the Prologix GPIB-USB Controller 6.0 USB Driver for WINDOWS: http://prologix.biz 
+4. Install the Prologix GPIB-USB Controller 6.0 USB Driver for WINDOWS: smb://mt-data/Software/MTestInstallers/Prologix/WINDOWS/CDM20828_Setup.exe 
 
 5. In order to call mtest.py from anywhere, set the value of the INSTRUMENT_DIRECTORY global variable in 
    MTest/mtest.py to the absolute path of MTest/instruments. Otherwise you will only be able to call
