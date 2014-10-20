@@ -13,7 +13,7 @@ from BeautifulSoup import BeautifulSoup as soup
 rm = visa.ResourceManager()
 
 #globals
-INSTRUMENT_DIRECTORY = './instruments'
+INSTRUMENT_DIRECTORY = '/Users/Andrew/MTest/instruments/'
 INSTRUMENT_ADDRESSES = [address for address in rm.list_resources()]
 MAC_OSX_ALIAS = 'darwin'
 WINDOWS_ALIAS = 'win32'
