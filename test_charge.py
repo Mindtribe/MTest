@@ -24,7 +24,7 @@ except u3.NullHandleException:
 finally:
     print 'LabJack connected. I think.'
 
-#*10configure labjack
+#configure labjack
 lj.configAnalog(VBAT_IO_PIN)
 lj.configAnalog(CHG_IO_PIN)
 
