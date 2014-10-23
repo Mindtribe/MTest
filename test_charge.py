@@ -9,7 +9,7 @@ import datetime
 
 VBAT_IO_PIN = 0 #IO Pin on Labjack
 CHG_IO_PIN = 1 #IO Pin on Labjack
-HOURS_TO_RUN = 3 #in hours
+HOURS_TO_RUN = 5 #in hours
 SAMPLE_DELAY = 10 #in seconds
 
 #connect to labjack
