@@ -43,10 +43,10 @@ finally:
 
 #configure labjack
 lj.configAnalog(VBAT_IO)
-lj.configAnalog(CHG_IO)
+lj.configDigital(CHG_IO)
 lj.configAnalog(FRONT_LEDS_IO)
 lj.configAnalog(REAR_LEDS_IO)
-lj.configAnalog(PG_IO)
+lj.configDigital(PG_IO)
 lj.configAnalog(TLEDR1_IO)
 lj.configAnalog(BLEDR1_IO)
 lj.configAnalog(BLER2_IO)
@@ -78,8 +78,11 @@ for i in range(0,range_end):
     bledr2 = lj.getAIN(BLEDR2_IO)*2
 
     #dac outputs
-    dac0Bits = u3.voltageToDACBits(VUSB_ON, is16Bits=True)
-    u3.getFeedback(u3.DAC16(VUSB_DAC, dac0Bits))
+    dac0Bits = lj.voltageToDACBits(VUSB_OFF, is16Bits=True)
+    u3.getFeedback(lj.DAC16(VUSB_DAC, dac0Bits))
+    
+    dac1Bits = lj.voltageToDACBits(MCLEAR_OFF, is16Bits=True)
+    u3.getFeedback(lj.DAC16(MCLEAR_DAC, dac1Bits))
 
     currentTime = datetime.datetime.now().time().__str__()
 #   writer.writerow( (currentTime, vbat, chg) )
