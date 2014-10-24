@@ -7,14 +7,24 @@ import math
 import json
 import datetime
 
-VBAT_IO = 0 #IO Pin on Labjack
-CHG_IO = 1
-FRONT_LEDS_IO = 2
-REAR_LEDS_IO = 3
-PG_IO = 4
-TLEDR1_IO = 5
-BLEDR1_IO = 6
-BLEDR2_IO = 7
+##Signal to IO pin mapping
+#NET             #FIO PIN
+VBAT_IO         = 0 
+CHG_IO          = 1
+FRONT_LEDS_IO   = 2
+REAR_LEDS_IO    = 3
+PG_IO           = 4
+TLEDR1_IO       = 5
+BLEDR1_IO       = 6
+BLEDR2_IO       = 7
+
+VUSB_DAC        = 0
+MCLEAR_DAC      = 1 
+
+VUSB_ON = 4.95
+VUSB_OFF = 0
+MCLEAR_HIGH = 3.5
+MCLEAR_LOW = 0
 
 HOURS_TO_RUN = 5 #in hours
 SAMPLE_DELAY = 10 #in seconds
@@ -67,18 +77,22 @@ for i in range(0,range_end):
     bledr1 = lj.getAIN(BLEDR1_IO)*2
     bledr2 = lj.getAIN(BLEDR2_IO)*2
 
-    currentTime = datetime.datetime.now().time().__str__()
-#    writer.writerow( (currentTime, vbat, chg) )
+    #dac outputs
+    dac0Bits = u3.voltageToDACBits(VUSB_ON, is16Bits=True)
+    u3.getFeedback(u3.DAC16(VUSB_DAC, dac0Bits))
 
-    print(currentTime) + '\n'
-    print(vbat) + '\n'
-    print(chg) + '\n'
-    print(front_leds) + '\n'
-    print(rear_leds) + '\n'
-    print(pg) + '\n'
-    print(tledr1) + '\n'
-    print(bledr1) + '\n'
-    print(bledr2) + '\n'
+    currentTime = datetime.datetime.now().time().__str__()
+#   writer.writerow( (currentTime, vbat, chg) )
+
+    print("currentTime: ") + str(currentTime) + '\n'
+    print("vbat: ") + str(vbat) + '\n'
+    print("chg: ") + str(chg) + '\n'
+    print("front_leds: ") + str(front_leds) + '\n'
+    print("rear_leds: ") + str(rear_leds) + '\n'
+    print("pg: ") + str(pg) + '\n'
+    print("tledr1: ") + str(tledr1) + '\n'
+    print("bledr1: ") + str(bledr1) + '\n'
+    print("bledr2: ") + str(bledr2) + '\n'
     print '\n'
 
     time.sleep(SAMPLE_DELAY)
