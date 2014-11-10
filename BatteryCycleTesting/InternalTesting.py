@@ -90,14 +90,14 @@ if __name__ == '__main__':
        pass 
 
     #Check CHG state
-    chg = data['CHG']
+    vbat = data['VBAT']
 
     #Intialize our state for the state machine
     ###
     #Note: By default both VUSB and VBAT are "on". If we enter the discharge state,
     #we must disconnect VUSB
     ####
-    if(chg < 0.4):
+    if(vbat < 4.2):
         print "Battery is charging"
         state = "CHARGING"
     else:
