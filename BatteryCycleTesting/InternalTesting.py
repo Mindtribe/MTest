@@ -5,10 +5,11 @@ import datetime
 from time import sleep
 
 #global varz
-serialPort = '/dev/tty.usbmodem141721'
+serialPort = '/dev/tty.usbmodemfd121'
 baudRate =  9600
 cycles = 10
 sampleDelay = 30 #this needs to be synchronized with the Arduino firmware
+chargedVoltage = 4.17
 
 def quit(ser):
     ser.close()
@@ -96,7 +97,7 @@ if __name__ == '__main__':
     ###
     #Note: By default both VUSB is off.
     ####
-    if(vbat < 4.2):
+    if(vbat < chargedVoltage):
         print "Battery is charging"
         state = "CHARGING"
         sendCommand(ser, 'C') #remember to connect VUSB
@@ -142,9 +143,9 @@ if __name__ == '__main__':
                 chg = data['CHG']
                 currentTime = str(datetime.datetime.now())
                 csvWriter.writerow( (currentTime, str(vbat), str(chg)) )
-                if(vbat >= 4.2):
+                if(vbat >= chargedVoltage):
                     #battery is done charging
-                    print "Charge Complete (Hit 4.2V)"
+                    print "Charge Complete (Hit ~4.2V)"
                     
                     #log stop time and elapsed
                     stopTime = datetime.datetime.now()
