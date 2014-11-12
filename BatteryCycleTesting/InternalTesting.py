@@ -94,16 +94,15 @@ if __name__ == '__main__':
 
     #Intialize our state for the state machine
     ###
-    #Note: By default both VUSB and VBAT are "on". If we enter the discharge state,
-    #we must disconnect VUSB
+    #Note: By default both VUSB is off.
     ####
     if(vbat < 4.2):
         print "Battery is charging"
         state = "CHARGING"
+        sendCommand(ser, 'C') #remember to connect VUSB
     else:
         print "Battery is charged"
         state = "DISCHARGING"
-        sendCommand(ser, 'D') #remember to disconnect VUSB
 
     #Run "cycles" number of charges and discharges
     #each charge/discharge (NOT as a pair) counts as a cycle 
@@ -124,7 +123,7 @@ if __name__ == '__main__':
             
             #initialize the log file
             startTime = datetime.datetime.now()
-            logFileHandle.write("Start time: " + str(startTime))
+            logFileHandle.write("Start time: " + str(startTime) + '\n')
 
             #initialize the csv file
             csvWriter.writerow( ('Time', 'VBAT', 'CHG') )
@@ -150,8 +149,8 @@ if __name__ == '__main__':
                     #log stop time and elapsed
                     stopTime = datetime.datetime.now()
                     elapsedTime = stopTime-startTime
-                    logFileHandle.write("Stop time: " + str(stopTime))
-                    logFileHandle.write("Elapsed time: " + str(elapsedTime))
+                    logFileHandle.write("Stop time: " + str(stopTime)+ '\n')
+                    logFileHandle.write("Elapsed time: " + str(elapsedTime)+ '\n')
 
                     #close files
                     logFileHandle.close()
@@ -180,7 +179,7 @@ if __name__ == '__main__':
             
             #initialize the log file
             startTime = datetime.datetime.now()
-            logFileHandle.write("Start time: " + str(startTime))
+            logFileHandle.write("Start time: " + str(startTime)+ '\n')
 
             #initialize the csv file
             csvWriter.writerow( ('Time', 'VBAT', 'CHG') )
@@ -206,8 +205,8 @@ if __name__ == '__main__':
                     #log stop time and elapsed
                     stopTime = datetime.datetime.now()
                     elapsedTime = stopTime-startTime
-                    logFileHandle.write("Stop time: " + str(stopTime))
-                    logFileHandle.write("Elapsed time: " + str(elapsedTime))
+                    logFileHandle.write("Stop time: " + str(stopTime)+ '\n')
+                    logFileHandle.write("Elapsed time: " + str(elapsedTime)+ '\n')
 
                     #close files
                     logFileHandle.close()
