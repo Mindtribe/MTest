@@ -9,7 +9,8 @@ serialPort = '/dev/tty.usbmodemfd121'
 baudRate =  9600
 cycles = 10
 sampleDelay = 30 #this needs to be synchronized with the Arduino firmware
-chargedVoltage = 4.17
+chargedVoltage = 4.2 
+dischargedVoltage = 3.5
 
 def quit(ser):
     ser.close()
@@ -199,7 +200,7 @@ if __name__ == '__main__':
                 chg = data['CHG']
                 currentTime = str(datetime.datetime.now())
                 csvWriter.writerow( (currentTime, str(vbat), str(chg)) )
-                if(vbat < 3.5):
+                if(vbat < dischargedVoltage):
                     #battery has discharged 
                     print "Discharged."
                     
