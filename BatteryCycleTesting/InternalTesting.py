@@ -10,7 +10,7 @@ baudRate =  9600
 cycles = 10
 sampleDelay = 30 #this needs to be synchronized with the Arduino firmware
 chargedVoltage = 4.2 
-dischargedVoltage = 3.5
+dischargedVoltage = 3.55
 
 def quit(ser):
     ser.close()
