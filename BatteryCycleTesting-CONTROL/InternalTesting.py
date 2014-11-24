@@ -5,7 +5,7 @@ import datetime
 from time import sleep
 
 #global varz
-serialPort = '/dev/tty.usbmodemfa131'
+serialPort = '/dev/tty.usbmodemfa1311'
 baudRate =  9600
 cycles = 10
 sampleDelay = 30 #this needs to be synchronized with the Arduino firmware

@@ -6,11 +6,11 @@ import time
 from time import sleep
 
 #global varz
-serialPort = '/dev/tty.usbmodem141711'
+serialPort = '/dev/tty.usbmodemfa1321'
 baudRate =  9600
-cycles = 1
+cycles = 100
 statePause = 2 
-timesToBreathe = 4 
+timesToBreathe = 5 
 charging = True
 testsFailed = 0
 thisCycle = 0
@@ -412,13 +412,15 @@ if __name__ == '__main__':
                 for dataPoint in dataList:
                     pwmList.append(dataPoint['PWM_FRONT'])
                 pwmList.sort()
-                if not( (pwmList[99]-pwmList[0])/100 >= 0.027):
-                    error = "No breathing detected"
-                    print error
-                    csvWriter.writerow(['FAILURE', error])
-                    logFileHandle.write("Failed test on cycle {} in state {}".format(thisCycle, state))
-                    #increment error counter
-                    testsFailed += 1
+		slope = (pwmList[99]-pwmList[0])/100
+                if not( slope >= 0.025):
+	            error = "No breathing detected (min: {}, max: {}, slope: {})".format(pwmList[0], pwmList[99], slope)
+		
+		    print error
+		    csvWriter.writerow(['FAILURE', error])
+		    logFileHandle.write("Failed test on cycle {} in state {}".format(thisCycle, state))
+		    #increment error counter
+		    testsFailed += 1
                 
                 #wait until breathing is done
                 print "Waiting for breathing to finish....."
