@@ -8,7 +8,7 @@ from time import sleep
 #global varz
 serialPort = '/dev/tty.usbmodemfa1321'
 baudRate =  9600
-cycles = 100
+cycles = 10
 statePause = 2 
 timesToBreathe = 5 
 charging = True
@@ -58,10 +58,10 @@ def getCorrectValues(state, charging):
         'TLEDR1'    :True,
         'TLEDR2'    :True,
         'VBAT'      :[3.8,4.25],
-        'REAR_LEDS' :[0,0.5],
+        'REAR_LEDS' :True,
         'FRONT_LEDS':[0,0.5],
         'PWM_FRONT' :True,
-        'PWM_REAR'  :True
+        'PWM_REAR'  :[0.5.1.4] if charging else [0.5,0.6]
         }
     
     valuesOnPluggedIn = {
@@ -74,21 +74,7 @@ def getCorrectValues(state, charging):
         'VBAT'      :[3.8,4.25],
         'REAR_LEDS' :True,
         'FRONT_LEDS':True,
-        'PWM_FRONT' :[2.9,3.5],
-        'PWM_REAR'  :[0.05,0.65]
-    }
-
-    valuesBreathingPluggedIn = {
-        'CHG'       :[chg_min, chg_max],
-        'PG'        :[0,0.6],
-        'BLEDR1'    :True,
-        'BLEDR2'    :True,
-        'TLEDR1'    :True,
-        'TLEDR2'    :True,
-        'VBAT'      :[3.8,4.25],
-        'REAR_LEDS' :True,
-        'FRONT_LEDS':True,
-        'PWM_FRONT' :[2.9,3.5],
+        'PWM_FRONT' :[2.8,3.65],
         'PWM_REAR'  :[0.05,0.65]
     }
 
@@ -99,7 +85,7 @@ def getCorrectValues(state, charging):
     if state == "ON/PLUGGEDIN" : 
         return valuesOnPluggedIn
     if state == "BREATHING/PLUGGEDIN": 
-        return valuesBreathingPluggedIn
+        print "this shouldn't happen"
 
 #take in a map of the sampled data and the correct ranges for the current state
 #compare! log failures
@@ -121,7 +107,7 @@ def checkValues(sample, correct, csvWriter, logFileHandle, state):
                 print error 
                 #log the error
                 csvWriter.writerow(['FAILURE', error])
-                logFileHandle.write("Failed test on cycle {} in state {}".format(thisCycle, state))
+                logFileHandle.write("\nFailed test on cycle {} in state {}".format(thisCycle, state))
                 #increment error counter
                 testsFailed += 1
             else: 
@@ -281,13 +267,15 @@ if __name__ == '__main__':
                 print '\n'
                 sleep(statePause)
 
-                correct = getCorrectValues(state, charging)
-                print "Checking data from state: " + state
-                checkValues(data, correct, csvWriter, logFileHandle, state)
-
+                #update CSV
                 csvWriter.writerow( [state] )
                 csvWriter.writerow( [currentTime] )
                 csvWriter.writerow( data2 )
+
+                #check sampled data for correctness
+                correct = getCorrectValues(state, charging)
+                print "Checking data from state: " + state
+                checkValues(data, correct, csvWriter, logFileHandle, state)
                 
                 #Transition to OFF/PLUGGEDIN
                 sendCommand(ser,C)
@@ -309,13 +297,15 @@ if __name__ == '__main__':
                 print '\n'
                 sleep(statePause)
 
-                correct = getCorrectValues(state, charging)
-                print "Checking data from state: " + state
-                checkValues(data, correct, csvWriter, logFileHandle, state)
-
+                #update CSV
                 csvWriter.writerow( [state] )
                 csvWriter.writerow( [currentTime] )
                 csvWriter.writerow( data2 )
+
+                #check sampled data for correctness
+                correct = getCorrectValues(state, charging)
+                print "Checking data from state: " + state
+                checkValues(data, correct, csvWriter, logFileHandle, state)
                 
                 #Transition to ....
                 if(breathingCycles is not timesToBreathe):
@@ -342,14 +332,16 @@ if __name__ == '__main__':
                 print '\n'
                 sleep(statePause)
                 
+                #update CSV
+                csvWriter.writerow( [state] )
+                csvWriter.writerow( [currentTime] )
+                csvWriter.writerow( data2 )
+
+                #check sampled data for correctness
                 correct = getCorrectValues(state, charging)
                 print "Checking data from state: " + state
                 checkValues(data, correct, csvWriter, logFileHandle, state)
 
-                csvWriter.writerow( [state] )
-                csvWriter.writerow( [currentTime] )
-                csvWriter.writerow( data2 )
-                
                 #Transition to ....
 
                 #if the inner loop is still going, start breathing
