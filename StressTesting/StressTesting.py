@@ -61,7 +61,7 @@ def getCorrectValues(state, charging):
         'REAR_LEDS' :True,
         'FRONT_LEDS':[0,0.5],
         'PWM_FRONT' :True,
-        'PWM_REAR'  :[0.5.1.4] if charging else [0.5,0.6]
+        'PWM_REAR'  :[0.5,1.4] if charging else [0.5,0.6]
         }
     
     valuesOnPluggedIn = {
@@ -74,7 +74,7 @@ def getCorrectValues(state, charging):
         'VBAT'      :[3.8,4.25],
         'REAR_LEDS' :True,
         'FRONT_LEDS':True,
-        'PWM_FRONT' :[2.8,3.65],
+        'PWM_FRONT' :[2.98,3.25],
         'PWM_REAR'  :[0.05,0.65]
     }
 
