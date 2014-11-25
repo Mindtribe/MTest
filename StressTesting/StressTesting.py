@@ -61,7 +61,7 @@ def getCorrectValues(state, charging):
         'REAR_LEDS' :True,
         'FRONT_LEDS':[0,0.5],
         'PWM_FRONT' :True,
-        'PWM_REAR'  :[0.5,1.4] if charging else [0.5,0.6]
+        'PWM_REAR'  :[0.4,1.4] if charging else [0.4,0.6]
         }
     
     valuesOnPluggedIn = {
@@ -74,7 +74,7 @@ def getCorrectValues(state, charging):
         'VBAT'      :[3.8,4.25],
         'REAR_LEDS' :True,
         'FRONT_LEDS':True,
-        'PWM_FRONT' :[2.98,3.25],
+        'PWM_FRONT' :[2.8,3.3],
         'PWM_REAR'  :[0.05,0.65]
     }
 
@@ -399,13 +399,13 @@ if __name__ == '__main__':
                 #check for breathing
                 #This is a rough first-order approximation of breathing.
                 #We check the max slope of the DC level of the FRONT_LEDS signal
-                #A slope of ~.027 V/sample indicates roughly that breathing happened
+                #A slope of ~.025 V/sample indicates roughly that breathing happened
                 pwmList = []
                 for dataPoint in dataList:
                     pwmList.append(dataPoint['PWM_FRONT'])
                 pwmList.sort()
 		slope = (pwmList[99]-pwmList[0])/100
-                if not( slope >= 0.025):
+                if not( slope >= 0.0240):
 	            error = "No breathing detected (min: {}, max: {}, slope: {})".format(pwmList[0], pwmList[99], slope)
 		
 		    print error
