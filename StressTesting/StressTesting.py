@@ -8,7 +8,7 @@ from time import sleep
 #global varz
 serialPort = '/dev/tty.usbmodemfa1321'
 baudRate =  9600
-cycles = 10
+cycles =1000 
 statePause = 2 
 timesToBreathe = 5 
 charging = True

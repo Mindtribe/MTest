@@ -1,0 +1,23 @@
+Start time: 2014-11-25 17:18:07.196084
+
+Failed test on cycle 15 in state ON/PLUGGEDIN
+Failed test on cycle 27 in state ON/PLUGGEDIN
+Failed test on cycle 34 in state ON/PLUGGEDIN
+Failed test on cycle 40 in state ON/PLUGGEDIN
+Failed test on cycle 44 in state ON/PLUGGEDIN
+Failed test on cycle 44 in state ON/PLUGGEDIN
+Failed test on cycle 44 in state ON/PLUGGEDIN
+Failed test on cycle 54 in state ON/PLUGGEDIN
+Failed test on cycle 61 in state ON/PLUGGEDIN
+Failed test on cycle 67 in state ON/PLUGGEDIN
+Failed test on cycle 69 in state ON/PLUGGEDIN
+Failed test on cycle 69 in state ON/PLUGGEDIN
+Failed test on cycle 101 in state ON/PLUGGEDIN
+Failed test on cycle 113 in state ON/PLUGGEDIN
+Failed test on cycle 154 in state ON/PLUGGEDIN
+Failed test on cycle 165 in state ON/PLUGGEDINFailed test on cycle 171 in state BREATHING/PLUGGEDIN
+Failed test on cycle 181 in state ON/PLUGGEDIN
+Failed test on cycle 191 in state ON/PLUGGEDIN
+Failed test on cycle 193 in state ON/PLUGGEDINTotal tests failed: 20
+Stop time: 2014-11-25 17:18:07.196084
+Elapsed time: 17:40:14.902573
