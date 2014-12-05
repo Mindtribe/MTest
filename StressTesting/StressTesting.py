@@ -14,7 +14,7 @@ timesToBreathe = 5
 charging = True
 testsFailed = 0
 thisCycle = 0
-
+slopeVal = 0.0230
 #save the keystrokes!
 X = 'X'
 Y = 'Y'
@@ -37,8 +37,8 @@ def getCorrectValues(state, charging):
         chg_max = 4.25
 
     valuesOffUnplugged = {
-        'CHG'       :[3.95,4.25],
-        'PG'        :[3.95,4.25],
+        'CHG'       :[3.95,4.3],
+        'PG'        :[3.95,4.3],
         'BLEDR1'    :True,
         'BLEDR2'    :True,
         'TLEDR1'    :True,
@@ -57,7 +57,7 @@ def getCorrectValues(state, charging):
         'BLEDR2'    :True,
         'TLEDR1'    :True,
         'TLEDR2'    :True,
-        'VBAT'      :[3.8,4.25],
+        'VBAT'      :[3.8,4.3],
         'REAR_LEDS' :True,
         'FRONT_LEDS':[0,0.5],
         'PWM_FRONT' :True,
@@ -71,10 +71,10 @@ def getCorrectValues(state, charging):
         'BLEDR2'    :True,
         'TLEDR1'    :True,
         'TLEDR2'    :True,
-        'VBAT'      :[3.8,4.25],
+        'VBAT'      :[3.8,4.30],
         'REAR_LEDS' :True,
         'FRONT_LEDS':True,
-        'PWM_FRONT' :[2.8,3.3],
+        'PWM_FRONT' :[2.6,3.3],
         'PWM_REAR'  :[0.05,0.65]
     }
 
@@ -384,8 +384,6 @@ if __name__ == '__main__':
                 breathingStart = time.time()
                 while(True): #will fail when getreading doesn't get a line
                     #grab data
-                    data = getReading(ser)
-                    #break if that's all the data there is
                     if data is 0: 
                         break
                     #otherwise do all the things
@@ -405,7 +403,7 @@ if __name__ == '__main__':
                     pwmList.append(dataPoint['PWM_FRONT'])
                 pwmList.sort()
 		slope = (pwmList[99]-pwmList[0])/100
-                if not( slope >= 0.0240):
+                if not( slope >= slopeVal):
 	            error = "No breathing detected (min: {}, max: {}, slope: {})".format(pwmList[0], pwmList[99], slope)
 		
 		    print error
